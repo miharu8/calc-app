@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>シンプル電卓</title>
+<style>
+:root{
+  --bg:#E9ECE7; --panel:#F6F7F4; --ink:#17201C; --sub:#66716B; --line:#CDD3CC;
+  --key:#FFFFFF; --key-ink:#17201C;
+  --op:#D5E4DD; --op-ink:#0B5A4A;
+  --eq:#0B5A4A; --eq-ink:#FFFFFF;
+  --clear:#F2D9D2; --clear-ink:#8A2F1B;
+  --shadow:0 1px 0 rgba(23,32,28,.12);
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#101513; --panel:#171E1B; --ink:#E7EEE9; --sub:#8C9892; --line:#2C3631;
+    --key:#222B27; --key-ink:#E7EEE9;
+    --op:#1F3A31; --op-ink:#8FD6BC;
+    --eq:#3DBA95; --eq-ink:#06231A;
+    --clear:#3A231D; --clear-ink:#F0A793;
+    --shadow:0 1px 0 rgba(0,0,0,.4);
+  }
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:-apple-system,"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic",system-ui,sans-serif;
+  font-variant-numeric:tabular-nums;
+}
+[hidden]{display:none!important}
+button{font:inherit;color:inherit;touch-action:manipulation}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--op-ink);outline-offset:2px}
+
+.app{
+  max-width:440px; margin:0 auto; height:100%;
+  display:flex; flex-direction:column;
+  padding:calc(env(safe-area-inset-top,0px) + 10px) 14px calc(env(safe-area-inset-bottom,0px) + 14px);
+}
+.bar{display:flex;justify-content:space-between;gap:8px}
+.chip{
+  border:1px solid var(--line); background:var(--panel); border-radius:999px;
+  padding:9px 16px; min-height:44px; cursor:pointer; font-size:15px;
+}
+.display{
+  flex:1 1 auto; min-height:0; display:flex; flex-direction:column; justify-content:flex-end;
+  padding:8px 6px 14px; gap:4px;
+}
+.expr{
+  font-size:26px; line-height:1.35; text-align:right; min-height:1.4em; max-height:5.6em;
+  overflow-y:auto; overflow-wrap:anywhere; cursor:text; color:var(--ink);
+}
+.expr span{white-space:pre-wrap}
+.caret{
+  display:inline-block; width:2px; height:1.1em; vertical-align:text-bottom;
+  background:var(--op-ink); margin:0 -1px; animation:blink 1.1s steps(1) infinite;
+}
+@keyframes blink{50%{opacity:0}}
+.result{
+  display:block; width:100%; background:none; border:0; padding:4px 0; cursor:pointer;
+  text-align:right; font-weight:600; font-size:56px; line-height:1.15; color:var(--ink);
+  overflow-wrap:anywhere;
+}
+.result.m{font-size:42px}
+.result.s{font-size:32px}
+.result.msg{font-size:22px;font-weight:500;color:var(--clear-ink)}
+.result.faint{opacity:.45}
+
+.pad{
+  flex:0 0 auto; height:clamp(340px,54dvh,500px);
+  display:grid; grid-template-columns:repeat(4,1fr); grid-template-rows:repeat(5,1fr) 1.15fr; gap:10px;
+}
+.pad button{
+  border:0; border-radius:18px; background:var(--key); color:var(--key-ink);
+  font-size:26px; cursor:pointer; box-shadow:var(--shadow); min-height:44px;
+  transition:transform .08s ease;
+}
+.pad button:active{transform:scale(.96)}
+.pad .op{background:var(--op);color:var(--op-ink);font-size:30px}
+.pad .fn{background:var(--op);color:var(--op-ink);font-size:24px}
+.pad .clr{background:var(--clear);color:var(--clear-ink);font-size:22px;font-weight:600}
+.pad .eq{background:var(--eq);color:var(--eq-ink);grid-column:1 / -1;font-size:34px}
+
+.sheet{
+  position:fixed; inset:0; background:rgba(0,0,0,.42);
+  display:flex; align-items:flex-end; justify-content:center; z-index:10;
+}
+.sheet-body{
+  background:var(--panel); width:min(100%,440px); max-height:88dvh; overflow:auto;
+  border-radius:22px 22px 0 0; padding:16px 16px calc(18px + env(safe-area-inset-bottom,0px));
+  animation:up .18s ease-out;
+}
+@keyframes up{from{transform:translateY(24px);opacity:.4}}
+@media (prefers-reduced-motion: reduce){
+  .sheet-body{animation:none}.caret{animation:none}.pad button{transition:none}
+}
+.sheet-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.sheet-head h2{margin:0;font-size:18px}
+.x{border:0;background:var(--key);border-radius:999px;width:44px;height:44px;font-size:20px;cursor:pointer}
+.small-btn{
+  border:1px solid var(--line);background:var(--key);border-radius:10px;padding:8px 12px;
+  min-height:44px;cursor:pointer;font-size:14px;
+}
+.small-btn.danger{color:var(--clear-ink)}
+
+.hist{list-style:none;margin:0;padding:0}
+.hist li{display:grid;grid-template-columns:1fr auto 44px;align-items:center;gap:6px;border-top:1px solid var(--line)}
+.hist li:first-child{border-top:0}
+.hist button{background:none;border:0;cursor:pointer;text-align:left;padding:10px 4px;min-height:44px}
+.h-expr{font-size:15px;color:var(--sub);overflow-wrap:anywhere}
+.h-res{font-size:20px;font-weight:600;text-align:right!important}
+.h-del{color:var(--sub);font-size:18px}
+.empty{color:var(--sub);padding:18px 4px;line-height:1.7}
+
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px}
+.tabs button{border:0;background:var(--key);border-radius:12px;padding:10px;min-height:44px;cursor:pointer;font-size:15px}
+.tabs button.on{background:var(--eq);color:var(--eq-ink)}
+.target{margin:2px 2px 12px;color:var(--sub);font-size:14px}
+.target b{color:var(--ink);font-size:18px;margin-left:6px}
+.field{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:10px 0}
+.field>span{font-size:14px;color:var(--sub);white-space:nowrap}
+.seg{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.seg button{border:1px solid var(--line);background:var(--key);border-radius:999px;padding:8px 14px;min-height:44px;cursor:pointer;font-size:14px}
+.seg button.on{background:var(--op);color:var(--op-ink);border-color:var(--op-ink);font-weight:600}
+.seg input{width:96px;min-height:44px;border:1px solid var(--line);border-radius:12px;background:var(--key);color:var(--key-ink);padding:0 10px;font:inherit;font-size:16px}
+.rows{margin-top:12px;border-top:1px solid var(--line)}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 2px;border-bottom:1px solid var(--line)}
+.row small{display:block;color:var(--sub);font-size:13px}
+.row b{font-size:22px}
+.row .note{font-size:15px;font-weight:500}
+.apply{border:0;background:var(--eq);color:var(--eq-ink);border-radius:12px;padding:8px 12px;min-height:44px;cursor:pointer;font-size:14px;font-weight:600}
+.stepper{display:flex;align-items:center;gap:10px}
+.stepper button{width:44px;height:44px;border-radius:999px;border:1px solid var(--line);background:var(--key);font-size:20px;cursor:pointer}
+.stepper b{min-width:3.2em;text-align:center;font-size:18px}
+
+.toast{
+  position:fixed; left:50%; bottom:calc(env(safe-area-inset-bottom,0px) + 90px); transform:translateX(-50%);
+  background:var(--ink); color:var(--bg); padding:10px 16px; border-radius:999px; font-size:14px; z-index:20;
+  pointer-events:none;
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="bar">
+    <button class="chip" id="btnHist" aria-label="履歴を開く">履歴</button>
+    <button class="chip" id="btnTools" aria-label="便利ツールを開く">便利ツール</button>
+  </div>
+  <section class="display" aria-live="polite">
+    <div class="expr" id="expr" aria-label="式"></div>
+    <button class="result" id="result" aria-label="結果をコピー"></button>
+  </section>
+  <section class="pad" id="pad">
+    <button class="clr" data-k="AC" aria-label="すべて消す">AC</button>
+    <button class="fn" data-k="(" aria-label="左かっこ">(</button>
+    <button class="fn" data-k=")" aria-label="右かっこ">)</button>
+    <button class="fn" data-k="BS" aria-label="1文字消す">⌫</button>
+    <button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button>
+    <button class="op" data-k="÷" aria-label="割る">÷</button>
+    <button data-k="4">4</button><button data-k="5">5</button><button data-k="6">6</button>
+    <button class="op" data-k="×" aria-label="かける">×</button>
+    <button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button>
+    <button class="op" data-k="−" aria-label="引く">−</button>
+    <button data-k="0">0</button>
+    <button data-k="." aria-label="小数点">.</button>
+    <button class="fn" data-k="%" aria-label="パーセント">%</button>
+    <button class="op" data-k="+" aria-label="足す">+</button>
+    <button class="eq" data-k="=" aria-label="計算する">=</button>
+  </section>
+</div>
+
+<div class="sheet" id="histSheet" hidden>
+  <div class="sheet-body" role="dialog" aria-modal="true" aria-label="履歴">
+    <div class="sheet-head">
+      <h2>履歴</h2>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="small-btn danger" id="histClear">すべて削除</button>
+        <button class="x" data-close aria-label="閉じる">✕</button>
+      </div>
+    </div>
+    <ul class="hist" id="histList"></ul>
+  </div>
+</div>
+
+<div class="sheet" id="toolSheet" hidden>
+  <div class="sheet-body" role="dialog" aria-modal="true" aria-label="便利ツール">
+    <div class="sheet-head">
+      <h2>便利ツール</h2>
+      <button class="x" data-close aria-label="閉じる">✕</button>
+    </div>
+    <div id="toolBody"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+/*LOGIC_START*/
+class CalcError extends Error{ constructor(code){ super(code); this.code=code; } }
+const pow10 = (k) => 10n ** BigInt(k);
+const norm = (d) => { let n=d.n, e=d.e; while(e>0 && n%10n===0n){ n/=10n; e--; } return {n,e}; };
+const D = (n) => norm({n:BigInt(n), e:0});
+function parseDec(str){
+  const parts = str.split('.'); let i = parts[0] || '0'; const f = parts[1] || '';
+  return norm({n:BigInt(i+f), e:f.length});
+}
+function align(a,b){ const e=Math.max(a.e,b.e); return [a.n*pow10(e-a.e), b.n*pow10(e-b.e), e]; }
+const add = (a,b)=>{ const [x,y,e]=align(a,b); return norm({n:x+y,e}); };
+const sub = (a,b)=>{ const [x,y,e]=align(a,b); return norm({n:x-y,e}); };
+const mul = (a,b)=> norm({n:a.n*b.n, e:a.e+b.e});
+const neg = (a)=> ({n:-a.n, e:a.e});
+function div(a,b){
+  if(b.n===0n) throw new CalcError('div0');
+  const n = (a.n * pow10(b.e+20)) / b.n;
+  return norm({n, e:a.e+20});
+}
+function roundTo(d, dec){
+  if(d.e<=dec) return d;
+  const m = pow10(d.e-dec); let n=d.n; const ng=n<0n; if(ng) n=-n;
+  let q=n/m; const r=n%m; if(r*2n>=m) q+=1n;
+  return norm({n: ng?-q:q, e:dec});
+}
+function toPlain(d, maxDec=10){
+  d = roundTo(d, maxDec);
+  const ng = d.n<0n; let s=(ng?-d.n:d.n).toString();
+  if(d.e>0){ s=s.padStart(d.e+1,'0'); s=s.slice(0,-d.e)+'.'+s.slice(-d.e); }
+  return (ng && d.n!==0n) ? '-'+s : s;
+}
+function fmt(plain){
+  let sign=''; let s=plain; if(s[0]==='-'){ sign='-'; s=s.slice(1); }
+  const [i,f] = s.split('.');
+  const ii = i.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  return sign + ii + (f!==undefined ? '.'+f : '');
+}
+function intDigits(plain){ return plain.replace('-','').split('.')[0].length; }
+
+function tokenize(s){
+  const t=[]; let i=0;
+  while(i<s.length){
+    const c=s[i];
+    if(/[0-9.]/.test(c)){
+      let j=i; while(j<s.length && /[0-9.]/.test(s[j])) j++;
+      const num=s.slice(i,j);
+      if((num.match(/\./g)||[]).length>1 || num==='.') throw new CalcError('syntax');
+      t.push({t:'num', v:num}); i=j;
+    } else if('+−×÷()%'.includes(c)){ t.push({t:c}); i++; }
+    else throw new CalcError('syntax');
+  }
+  return t;
+}
+function parse(tk){
+  let p=0; const peek=()=>tk[p]; const bad=()=>new CalcError('syntax');
+  function expr(){
+    let n=term();
+    while(peek() && (peek().t==='+'||peek().t==='−')){ const op=tk[p++].t; const r=term(); n={op,l:n,r}; }
+    return n;
+  }
+  function term(){
+    let n=unary();
+    while(peek() && (peek().t==='×'||peek().t==='÷')){ const op=tk[p++].t; const r=unary(); n={op,l:n,r}; }
+    return n;
+  }
+  function unary(){
+    if(peek() && peek().t==='−'){ p++; return {op:'neg', x:unary()}; }
+    if(peek() && peek().t==='+'){ p++; return unary(); }
+    return postfix();
+  }
+  function postfix(){
+    let n=primary();
+    while(peek() && peek().t==='%'){ p++; n={op:'pct', x:n}; }
+    return n;
+  }
+  function primary(){
+    const k=tk[p++]; if(!k) throw bad();
+    if(k.t==='num') return {num:parseDec(k.v)};
+    if(k.t==='('){ const n=expr(); if(!peek()||peek().t!==')') throw bad(); p++; return n; }
+    throw bad();
+  }
+  const n=expr(); if(p<tk.length) throw bad(); return n;
+}
+function ev(n){
+  if(n.num) return n.num;
+  switch(n.op){
+    case 'neg': return neg(ev(n.x));
+    case 'pct': return div(ev(n.x), D(100));
+    case '+': case '−': {
+      const l=ev(n.l); let r;
+      if(n.r.op==='pct') r = mul(l, div(ev(n.r.x), D(100)));
+      else r = ev(n.r);
+      return n.op==='+' ? add(l,r) : sub(l,r);
+    }
+    case '×': return mul(ev(n.l), ev(n.r));
+    case '÷': return div(ev(n.l), ev(n.r));
+  }
+  throw new CalcError('syntax');
+}
+const evaluate = (s) => ev(parse(tokenize(s)));
+function complete(expr){
+  let s=expr.replace(/[+−×÷.]+$/,'');
+  while(/\($/.test(s)) s=s.replace(/\($/,'').replace(/[+−×÷.]+$/,'');
+  const o=(s.match(/\(/g)||[]).length, c=(s.match(/\)/g)||[]).length;
+  if(o>c) s+=')'.repeat(o-c);
+  return s;
+}
+function evalLive(expr){
+  if(!expr) return {value:D(0), exact:true};
+  try{ return {value:evaluate(expr), exact:true}; }
+  catch(e){ if(e.code==='div0') return {error:'div0'}; }
+  try{
+    const c=complete(expr); if(!c) return {value:D(0), exact:false};
+    return {value:evaluate(c), exact:false};
+  }catch(e){ return {error: e.code==='div0' ? 'div0' : 'syntax'}; }
+}
+
+/* 日本向けツール */
+function floorDiv(n,d){ let q=n/d; if(n%d!==0n && (n<0n)!==(d<0n)) q-=1n; return q; }
+function toInt(d, mode){
+  if(d.e===0) return d;
+  const den=pow10(d.e); let q;
+  if(mode==='floor') q=floorDiv(d.n,den);
+  else if(mode==='ceil') q=-floorDiv(-d.n,den);
+  else q=floorDiv(2n*d.n+den, 2n*den);
+  return {n:q,e:0};
+}
+const taxIncl = (x,rate,mode)=> toInt(mul(x, div(D(100+rate), D(100))), mode);
+const taxExcl = (x,rate,mode)=> toInt(div(mul(x,D(100)), D(100+rate)), mode);
+const discounted = (x,pct,mode)=> toInt(mul(x, div(sub(D(100),pct), D(100))), mode);
+function split(x,n,mode){
+  const per=toInt(div(x,D(n)),mode); const total=mul(per,D(n)); return {per,total,diff:sub(total,x)};
+}
+/*LOGIC_END*/
+
+/* ===== 画面まわり ===== */
+const $ = (s)=>document.querySelector(s);
+const exprEl=$('#expr'), resEl=$('#result');
+const st={expr:'', pos:0, fresh:false};
+const LIMIT=200;
+let history=[]; 
+let settings={taxRate:10, taxRound:'floor', splitRound:'ceil', discount:'10', people:2};
+let toolTab='tax';
+
+function load(){
+  try{ const h=JSON.parse(localStorage.getItem('calc.history.v1')||'[]'); if(Array.isArray(h)) history=h.filter(x=>x&&typeof x.expr==='string'&&typeof x.result==='string').slice(0,LIMIT); }catch(e){}
+  try{ const s=JSON.parse(localStorage.getItem('calc.settings.v1')||'{}'); if(s&&typeof s==='object') settings=Object.assign(settings,s); }catch(e){}
+}
+function saveHistory(){ try{ localStorage.setItem('calc.history.v1', JSON.stringify(history)); }catch(e){} }
+function saveSettings(){ try{ localStorage.setItem('calc.settings.v1', JSON.stringify(settings)); }catch(e){} }
+
+let toastTimer;
+function toast(msg){
+  const t=$('#toast'); t.textContent=msg; t.hidden=false; clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>{t.hidden=true;},1500);
+}
+async function copyText(text){
+  try{ await navigator.clipboard.writeText(text); }
+  catch(e){
+    const ta=document.createElement('textarea'); ta.value=text; ta.style.cssText='position:fixed;opacity:0';
+    document.body.appendChild(ta); ta.select(); try{document.execCommand('copy');}catch(_){} ta.remove();
+  }
+  toast('コピーしました');
+}
+
+/* 入力 */
+const OPS='+−×÷';
+function insert(ch){
+  if(st.fresh){
+    if(/[0-9.(]/.test(ch)){ st.expr=''; st.pos=0; } else { st.pos=st.expr.length; }
+    st.fresh=false;
+  }
+  const e=st.expr; const before=e[st.pos-1];
+  if(OPS.includes(ch)){
+    if(!before){ if(ch!=='−') return; }
+    else if(OPS.includes(before)){
+      if(!(ch==='−' && (before==='×'||before==='÷'))){
+        st.expr=e.slice(0,st.pos-1)+ch+e.slice(st.pos); return;
+      }
+    } else if(before==='(' && ch!=='−') return;
+  } else if(ch==='%'){
+    if(!before || !/[0-9)%]/.test(before)) return;
+  } else if(ch==='.'){
+    let i=st.pos; while(i>0 && /[0-9.]/.test(e[i-1])) i--;
+    let j=st.pos; while(j<e.length && /[0-9.]/.test(e[j])) j++;
+    if(e.slice(i,j).includes('.')) return;
+    if(!(before && /[0-9]/.test(before))) ch='0.';
+  } else if(ch===')'){
+    const left=e.slice(0,st.pos);
+    const o=(left.match(/\(/g)||[]).length, c=(left.match(/\)/g)||[]).length;
+    if(o<=c || /[+−×÷(]$/.test(left)) return;
+  } else if(ch==='('){
+    if(before && /[0-9)%]/.test(before)) ch='×(';
+  } else if(/[0-9]/.test(ch)){
+    if(before && /[)%]/.test(before)) ch='×'+ch;
+  }
+  st.expr=e.slice(0,st.pos)+ch+e.slice(st.pos); st.pos+=ch.length;
+}
+function backspace(){
+  st.fresh=false;
+  if(st.pos<=0) return;
+  st.expr=st.expr.slice(0,st.pos-1)+st.expr.slice(st.pos); st.pos--;
+}
+function clearAll(){ st.expr=''; st.pos=0; st.fresh=false; }
+function move(d){ st.fresh=false; st.pos=Math.max(0,Math.min(st.expr.length, st.pos+d)); }
+
+function addHistory(expr,result){
+  history.unshift({expr,result}); if(history.length>LIMIT) history.length=LIMIT; saveHistory();
+}
+function setResultToExpr(plain){
+  st.expr=plain.replace('-','−'); st.pos=st.expr.length; st.fresh=true;
+}
+function equals(){
+  if(!st.expr) return;
+  const r=evalLive(st.expr);
+  if(r.error){ return; }
+  const plain=toPlain(r.value);
+  if(intDigits(plain)>30) return;
+  const isPlainNumber=/^−?[0-9.]+$/.test(st.expr);
+  if(!isPlainNumber){
+    addHistory(r.exact ? st.expr : complete(st.expr), plain);
+    setResultToExpr(plain);
+  } else { st.fresh=true; st.pos=st.expr.length; }
+}
+
+/* 描画 */
+function render(){
+  const e=st.expr; let html='';
+  for(let i=0;i<e.length;i++){
+    if(i===st.pos) html+='<i class="caret"></i>';
+    html+='<span data-i="'+i+'">'+e[i]+'</span>';
+  }
+  if(st.pos>=e.length) html+='<i class="caret"></i>';
+  exprEl.innerHTML=html;
+  const c=exprEl.querySelector('.caret'); if(c && c.scrollIntoView) c.scrollIntoView({block:'nearest'});
+
+  const r=evalLive(e); let text, cls='result';
+  if(r.error==='div0'){ text='計算できません'; cls+=' msg'; }
+  else if(r.error){ text='式を確認してください'; cls+=' msg'; }
+  else {
+    const plain=toPlain(r.value);
+    if(intDigits(plain)>30){ text='大きすぎます'; cls+=' msg'; }
+    else {
+      text=fmt(plain);
+      if(text.length>16) cls+=' s'; else if(text.length>10) cls+=' m';
+      if(!r.exact) cls+=' faint';
+      resEl.dataset.plain=plain;
+    }
+  }
+  if(r.error) delete resEl.dataset.plain;
+  resEl.className=cls; resEl.textContent=text;
+}
+
+/* 履歴 */
+function renderHistory(){
+  const ul=$('#histList');
+  if(!history.length){ ul.innerHTML='<li><div class="empty">まだ履歴がありません。<br>計算して「=」を押すと、ここに残ります。</div></li>'; return; }
+  ul.innerHTML=history.map((h,i)=>
+    '<li><button class="h-expr" data-act="load" data-i="'+i+'" aria-label="この式を読み込む">'+h.expr+'</button>'+
+    '<button class="h-res" data-act="ins" data-i="'+i+'" aria-label="この結果を式に入れる">= '+fmt(h.result)+'</button>'+
+    '<button class="h-del" data-act="del" data-i="'+i+'" aria-label="この履歴を削除">✕</button></li>').join('');
+}
+function insertResultText(plain){
+  const s = plain[0]==='-' ? '(−'+plain.slice(1)+')' : plain;
+  for(const ch of s) insert(ch);
+}
+
+/* ツール */
+let pending=[];
+const ROUNDS={floor:'切り捨て', round:'四捨五入', ceil:'切り上げ'};
+const yen=(d)=> '¥'+fmt(toPlain(d,0));
+function curValue(){
+  if(!st.expr) return null;
+  const r=evalLive(st.expr); if(r.error) return null;
+  return r.value;
+}
+function segRound(key){
+  return '<div class="seg">'+Object.keys(ROUNDS).map(k=>
+    '<button data-act="'+key+'" data-v="'+k+'" class="'+(settings[key]===k?'on':'')+'">'+ROUNDS[k]+'</button>').join('')+'</div>';
+}
+function rowsHtml(v){
+  pending=[]; let h='';
+  const amount=toPlain(v);
+  const addRow=(label,value,hist,applyable=true)=>{
+    let btn='';
+    if(applyable){ pending.push({value,hist}); btn='<button class="apply" data-act="apply" data-i="'+(pending.length-1)+'">式に入れる</button>'; }
+    h+='<div class="row"><div><small>'+label+'</small><b>'+yen(value)+'</b></div>'+btn+'</div>';
+  };
+  if(toolTab==='tax'){
+    const r=settings.taxRate, m=settings.taxRound;
+    addRow('税込('+r+'%)', taxIncl(v,r,m), fmt(amount)+' 税込'+r+'%');
+    addRow('税抜('+r+'%)', taxExcl(v,r,m), fmt(amount)+' 税抜'+r+'%');
+  } else if(toolTab==='disc'){
+    let p; try{ p=parseDec(String(settings.discount).trim()||'0'); }catch(e){ p=null; }
+    if(!p || p.n<0n || p.n>100n*pow10(p.e)){ return '<div class="empty">0〜100の数字で入力してください。</div>'; }
+    const after=discounted(v,p,settings.taxRound);
+    addRow(toPlain(p)+'%OFF後', after, fmt(amount)+' '+toPlain(p)+'%OFF');
+    addRow('割引額', sub(toInt(v,'round'),after), '', false);
+  } else {
+    const n=settings.people; const s=split(v,n,settings.splitRound);
+    addRow('1人あたり('+n+'人)', s.per, fmt(amount)+' ÷'+n+'人');
+    addRow('集まる合計', s.total, '', false);
+    const diff=s.diff, z=diff.n===0n;
+    h+='<div class="row"><div><small>差額</small><span class="note">'+
+      (z?'ぴったり割り切れます': (diff.n>0n? yen(diff)+' 多めに集まります' : yen(neg(diff))+' 足りません'))+'</span></div></div>';
+  }
+  return h;
+}
+function renderTools(rowsOnly){
+  const v=curValue();
+  const body=$('#toolBody');
+  if(v===null){
+    body.innerHTML='<div class="empty">先に電卓で金額を入力してください。<br>入力した金額が、ここでの計算の対象になります。</div>'; return;
+  }
+  if(rowsOnly){ $('#toolRows').innerHTML=rowsHtml(v); return; }
+  const tabs='<div class="tabs" role="tablist">'+[['tax','税'],['disc','割引'],['split','割り勘']].map(t=>
+    '<button role="tab" data-act="tab" data-v="'+t[0]+'" class="'+(toolTab===t[0]?'on':'')+'" aria-selected="'+(toolTab===t[0])+'">'+t[1]+'</button>').join('')+'</div>';
+  let ctrl='';
+  if(toolTab==='tax'){
+    ctrl='<div class="field"><span>税率</span><div class="seg">'+[10,8].map(r=>
+      '<button data-act="rate" data-v="'+r+'" class="'+(settings.taxRate===r?'on':'')+'">'+r+'%</button>').join('')+'</div></div>'+
+      '<div class="field"><span>端数</span>'+segRound('taxRound')+'</div>';
+  } else if(toolTab==='disc'){
+    const pre=['10','20','30','50'];
+    ctrl='<div class="field"><span>割引率</span><div class="seg">'+pre.map(p=>
+      '<button data-act="disc" data-v="'+p+'" class="'+(settings.discount===p?'on':'')+'">'+p+'%</button>').join('')+
+      '<input id="discIn" type="text" inputmode="decimal" placeholder="任意(%)" aria-label="任意の割引率(%)" value="'+(pre.includes(settings.discount)?'':settings.discount)+'"></div></div>'+
+      '<div class="field"><span>端数</span>'+segRound('taxRound')+'</div>';
+  } else {
+    ctrl='<div class="field"><span>人数</span><div class="stepper"><button data-act="ppl" data-v="-1" aria-label="人数を減らす">−</button><b>'+settings.people+'人</b><button data-act="ppl" data-v="1" aria-label="人数を増やす">+</button></div></div>'+
+      '<div class="field"><span>端数</span>'+segRound('splitRound')+'</div>';
+  }
+  body.innerHTML=tabs+'<div class="target">対象の金額<b>'+fmt(toPlain(v))+'</b></div>'+ctrl+'<div class="rows" id="toolRows">'+rowsHtml(v)+'</div>';
+}
+function applyPending(i){
+  const p=pending[i]; if(!p) return;
+  const plain=toPlain(p.value,0);
+  if(p.hist) addHistory(p.hist, plain);
+  setResultToExpr(plain); closeSheets(); render();
+}
+
+/* シート */
+function openSheet(id){ closeSheets(); $(id).hidden=false; }
+function closeSheets(){ $('#histSheet').hidden=true; $('#toolSheet').hidden=true; }
+const sheetOpen=()=>!$('#histSheet').hidden || !$('#toolSheet').hidden;
+
+/* イベント */
+$('#pad').addEventListener('click', ev=>{
+  const b=ev.target.closest('button[data-k]'); if(!b) return;
+  const k=b.dataset.k;
+  if(k==='AC') clearAll(); else if(k==='BS') backspace(); else if(k==='=') equals(); else insert(k);
+  render(); b.blur();
+});
+exprEl.addEventListener('click', ev=>{
+  const sp=ev.target.closest('span[data-i]');
+  if(sp){ const i=+sp.dataset.i; const r=sp.getBoundingClientRect(); st.pos = ev.clientX > r.left+r.width/2 ? i+1 : i; }
+  else st.pos=st.expr.length;
+  st.fresh=false; render();
+});
+resEl.addEventListener('click', ()=>{ if(resEl.dataset.plain) copyText(resEl.dataset.plain); });
+
+$('#btnHist').addEventListener('click', ()=>{ renderHistory(); openSheet('#histSheet'); });
+$('#btnTools').addEventListener('click', ()=>{ renderTools(); openSheet('#toolSheet'); });
+document.querySelectorAll('.sheet').forEach(s=>s.addEventListener('click', ev=>{
+  if(ev.target===s || ev.target.closest('[data-close]')) closeSheets();
+}));
+$('#histClear').addEventListener('click', ()=>{
+  if(!history.length) return;
+  if(confirm('履歴をすべて削除しますか?')){ history=[]; saveHistory(); renderHistory(); }
+});
+$('#histList').addEventListener('click', ev=>{
+  const b=ev.target.closest('button[data-act]'); if(!b) return;
+  const i=+b.dataset.i, h=history[i]; if(!h) return;
+  if(b.dataset.act==='del'){ history.splice(i,1); saveHistory(); renderHistory(); return; }
+  if(b.dataset.act==='load'){ st.expr=h.expr; st.pos=h.expr.length; st.fresh=false; }
+  if(b.dataset.act==='ins'){ if(st.fresh) st.fresh=false; insertResultText(h.result); }
+  closeSheets(); render();
+});
+$('#toolBody').addEventListener('click', ev=>{
+  const b=ev.target.closest('[data-act]'); if(!b) return;
+  const a=b.dataset.act, v=b.dataset.v;
+  if(a==='apply'){ applyPending(+b.dataset.i); return; }
+  if(a==='tab') toolTab=v;
+  else if(a==='rate') settings.taxRate=+v;
+  else if(a==='taxRound') settings.taxRound=v;
+  else if(a==='splitRound') settings.splitRound=v;
+  else if(a==='disc') settings.discount=v;
+  else if(a==='ppl') settings.people=Math.max(2, Math.min(99, settings.people+(+v)));
+  saveSettings(); renderTools();
+});
+$('#toolBody').addEventListener('input', ev=>{
+  if(ev.target.id==='discIn'){
+    const val=ev.target.value.replace(/[^0-9.]/g,''); settings.discount=val; saveSettings(); renderTools(true);
+    document.querySelectorAll('[data-act="disc"]').forEach(x=>x.classList.toggle('on', x.dataset.v===val));
+  }
+});
+document.addEventListener('keydown', ev=>{
+  if(ev.metaKey||ev.ctrlKey||ev.altKey) return;
+  const t=ev.target;
+  if(t && (t.tagName==='INPUT'||t.tagName==='SELECT'||t.tagName==='TEXTAREA')){ if(ev.key==='Escape') closeSheets(); return; }
+  if(sheetOpen()){ if(ev.key==='Escape') closeSheets(); return; }
+  if(t && t.tagName==='BUTTON' && (ev.key==='Enter'||ev.key===' ')) return;
+  const k=ev.key; let ok=true;
+  if(/^[0-9]$/.test(k)||k==='.'||k==='+'||k==='('||k===')'||k==='%') insert(k);
+  else if(k==='-') insert('−');
+  else if(k==='*'||k==='x'||k==='X') insert('×');
+  else if(k==='/') insert('÷');
+  else if(k==='Enter'||k==='=') equals();
+  else if(k==='Backspace') backspace();
+  else if(k==='Escape') clearAll();
+  else if(k==='ArrowLeft') move(-1);
+  else if(k==='ArrowRight') move(1);
+  else ok=false;
+  if(ok){ ev.preventDefault(); render(); }
+});
+
+load(); render();
+</script>
+</body>
+</html>
