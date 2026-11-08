@@ -1,180 +1,290 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#FFF8FA">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<title>立替金らくらく管理</title>
-<style>
-:root{--pk:#D4537E;--pk-d:#993556;--pk-l:#FBEAF0;--pk-m:#F4C0D1;--ink:#4B1528;--bg:#FFF8FA;--or-bg:#FAECE7;--or:#712B13;--mi-bg:#E1F5EE;--mi:#085041;--am-bg:#FAEEDA;--am:#633806}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,"Hiragino Maru Gothic ProN","Hiragino Sans",sans-serif;font-size:16px;line-height:1.5}
-#app{max-width:560px;margin:0 auto;padding:calc(env(safe-area-inset-top) + 12px) 16px calc(env(safe-area-inset-bottom) + 96px)}
-h1{font-size:20px;font-weight:500;margin:0}
-.top{display:flex;align-items:center;gap:8px;margin-bottom:12px}
-.back{border:0;background:var(--pk-l);color:var(--pk-d);width:40px;height:40px;border-radius:50%;font-size:20px}
-.note{font-size:12px;color:var(--pk-d);background:var(--pk-l);border-radius:12px;padding:6px 10px;margin-bottom:12px}
-.hero{background:var(--pk-m);border-radius:20px;padding:16px;margin-bottom:10px}
-.hero small{font-size:13px;color:#72243E}.hero b{display:block;font-size:34px;font-weight:500}
-.two{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
-.box{border-radius:16px;padding:12px}.box small{display:block;font-size:13px}.box b{font-size:22px;font-weight:500}
-.menu{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
-.menu button,.btn{min-height:56px;border-radius:16px;border:0.5px solid var(--pk-m);background:#fff;color:var(--ink);font-size:16px;font-family:inherit}
-.menu .main{background:var(--pk);color:#fff;border:0}
-.menu .off{color:#b08a97}
-.row{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:#fff;border:0.5px solid var(--pk-m);border-radius:16px;padding:10px;margin-bottom:8px;font-family:inherit;color:var(--ink);font-size:16px}
-.ic{width:42px;height:42px;border-radius:50%;background:var(--pk-l);display:flex;align-items:center;justify-content:center;font-size:20px;flex:none}
-.grow{flex:1;min-width:0}.grow div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.sub{font-size:12px;color:var(--pk-d)}
-.amt{text-align:right;font-weight:500}
-.tag{display:inline-block;font-size:12px;border-radius:10px;padding:1px 9px;font-weight:400}
-.t0{background:var(--or-bg);color:var(--or)}.t1{background:var(--mi-bg);color:var(--mi)}.tn{background:var(--am-bg);color:var(--am)}
-.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
-.chip{border:0;border-radius:14px;padding:10px 14px;background:var(--pk-l);color:#72243E;font-size:15px;font-family:inherit;min-height:44px}
-.chip.on{background:var(--pk);color:#fff}
-.cats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
-.cats .chip{padding:8px 4px;text-align:center}.cats .chip span{display:block;font-size:22px}
-label.l{display:block;font-size:13px;color:var(--pk-d);margin:0 0 4px}
-input,textarea{width:100%;font:inherit;font-size:16px;border:0.5px solid var(--pk-m);border-radius:14px;padding:12px;background:#fff;color:var(--ink);margin-bottom:12px}
-input:focus,textarea:focus{outline:2px solid var(--pk-m)}
-.big{font-size:32px;text-align:center;font-weight:500}
-.err{color:#A32D2D;font-size:13px;margin:-8px 0 10px}
-.save{width:100%;min-height:56px;border:0;border-radius:16px;background:var(--pk);color:#fff;font-size:17px;font-family:inherit}
-.del{width:100%;min-height:48px;margin-top:10px;border:0.5px solid #F09595;border-radius:16px;background:#fff;color:#A32D2D;font-size:15px;font-family:inherit}
-.fab{position:fixed;right:max(16px,calc(50% - 264px));bottom:calc(env(safe-area-inset-bottom) + 18px);width:60px;height:60px;border-radius:50%;border:0;background:var(--pk);color:#fff;font-size:30px}
-.mon{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
-.mon button{border:0;background:var(--pk-l);color:var(--pk-d);width:40px;height:40px;border-radius:50%;font-size:18px}
-.empty{text-align:center;color:var(--pk-d);padding:32px 0}
-#toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top) + 16px);transform:translateX(-50%);background:var(--ink);color:#fff;border-radius:20px;padding:10px 18px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:9}
-#toast.show{opacity:1}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ギャル＆スピ波動クリーニング電卓</title>
+    <style>
+        /* ギャル×宇宙スピリチュアルなネオンデザイン */
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #0f051d 0%, #290b4e 50%, #4a0e4e 100%);
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            color: #fff;
+        }
+
+        /* 電卓の本体 */
+        .calculator {
+            background: rgba(255, 255, 255, 0.07);
+            backdrop-filter: blur(15px);
+            border: 2px solid #ff007f;
+            box-shadow: 0 0 30px rgba(255, 0, 127, 0.3), inset 0 0 15px rgba(0, 242, 254, 0.2);
+            border-radius: 30px;
+            width: 360px;
+            padding: 25px;
+            box-sizing: border-box;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* ギャルの音声・メッセージ画面 */
+        .gal-bubble {
+            background: rgba(255, 0, 127, 0.15);
+            border-left: 5px solid #ff007f;
+            border-radius: 12px;
+            padding: 15px;
+            font-size: 14px;
+            font-weight: bold;
+            line-height: 1.5;
+            margin-bottom: 15px;
+            min-height: 70px;
+            color: #00f2fe;
+            text-shadow: 0 0 5px rgba(0, 242, 254, 0.5);
+        }
+
+        /* 数式と答えの表示エリア */
+        .display {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            padding: 15px;
+            text-align: right;
+            margin-bottom: 20px;
+            border: 1px solid rgba(0, 242, 254, 0.3);
+        }
+
+        #formula {
+            font-size: 16px;
+            color: #a0a0a0;
+            min-height: 20px;
+            word-wrap: break-word;
+        }
+
+        #result {
+            font-size: 32px;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 0 0 10px #00f2fe;
+            min-height: 40px;
+            margin-top: 5px;
+        }
+
+        /* ボタンのグリッド */
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        button {
+            border: none;
+            padding: 18px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+
+        button:active {
+            transform: scale(0.92);
+        }
+
+        /* 数字ボタン */
+        .btn-num {
+            background: rgba(255, 255, 255, 0.15);
+        }
+        .btn-num:hover {
+            background: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+        }
+
+        /* 記号ボタン */
+        .btn-op {
+            color: #00f2fe;
+            background: rgba(0, 242, 254, 0.1);
+        }
+        .btn-op:hover {
+            background: rgba(0, 242, 254, 0.25);
+            box-shadow: 0 0 10px #00f2fe;
+        }
+
+        /* クリアボタン */
+        .btn-clear {
+            color: #ffaa00;
+            background: rgba(255, 170, 0, 0.1);
+        }
+
+        /* 👑 最重要：波動クリーニング（＝）ボタン */
+        .btn-equal {
+            grid-column: span 2;
+            background: linear-gradient(45deg, #ff007f, #7928ca);
+            color: white;
+            font-size: 16px;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            box-shadow: 0 0 15px rgba(255, 0, 127, 0.5);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 15px rgba(255, 0, 127, 0.5); }
+            50% { box-shadow: 0 0 25px rgba(255, 0, 127, 0.8), 0 0 15px #00f2fe; }
+            100% { box-shadow: 0 0 15px rgba(255, 0, 127, 0.5); }
+        }
+
+        /* 背景に広がる神聖幾何学・波動絵のエフェクト（簡易版） */
+        .wave-bg {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            border: 2px dashed rgba(255, 0, 127, 0.2);
+            animation: spin 30s linear infinite;
+            pointer-events: none;
+            z-index: 1;
+        }
+        .wave-bg2 {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            border-radius: 50%;
+            border: 1px solid rgba(0, 242, 254, 0.2);
+            animation: spin-reverse 20s linear infinite;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes spin-reverse { 100% { transform: rotate(-360deg); } }
+
+        /* クリーニング発動時のキラキラフラッシュ */
+        .flash {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: white;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 100;
+            transition: opacity 0.3s ease;
+        }
+    </style>
 </head>
 <body>
-<div id="app"></div>
-<div id="toast" role="status"></div>
-<script>
-const CATS=[["交通費","🚃"],["駐車場代","🅿️"],["消耗品費","🛍️"],["備品費","📦"],["接待交際費","☕"],["その他","✨"]];
-const PAYS=["現金","カード","電子マネー","その他"];
-const REASONS=["発行されなかった","もらい忘れた","紛失した","電子領収書","その他"];
-const $=s=>document.querySelector(s), app=$("#app");
-const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const yen=n=>"¥"+Number(n).toLocaleString("ja-JP");
-const pad=n=>String(n).padStart(2,"0");
-const dstr=d=>d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
-const today=()=>dstr(new Date());
-const yest=()=>{const d=new Date();d.setDate(d.getDate()-1);return dstr(d)};
-const catIcon=n=>(CATS.find(c=>c[0]===n)||["","✨"])[1];
 
-let db,items=[],view="home",month=today().slice(0,7),filt={st:"all",nr:false},f=null,saving=false;
+    <div class="flash" id="flashLayer"></div>
+    <div class="wave-bg"></div>
+    <div class="wave-bg2"></div>
 
-function openDB(){return new Promise((ok,ng)=>{const r=indexedDB.open("tatekae",1);r.onupgradeneeded=()=>r.result.createObjectStore("expenses",{keyPath:"id"});r.onsuccess=()=>ok(r.result);r.onerror=()=>ng(r.error)})}
-function tx(mode,fn){return new Promise((ok,ng)=>{const t=db.transaction("expenses",mode),q=fn(t.objectStore("expenses"));t.oncomplete=()=>ok(q&&q.result);t.onerror=()=>ng(t.error);t.onabort=()=>ng(t.error)})}
-const loadAll=async()=>{items=(await tx("readonly",s=>s.getAll())).sort((a,b)=>b.date.localeCompare(a.date)||b.createdAt-a.createdAt)};
+    <div class="calculator">
+        <!-- ギャルAIのセリフエリア -->
+        <div class="gal-bubble" id="galSpeech">
+            「おつ〜☆ 数学だるくね？ウチと一緒にバイブスで片付けちゃお！数式入れて『波動クリーニング』押して！」
+        </div>
 
-function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("show");clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove("show"),1800)}
-function go(v){view=v;render();window.scrollTo(0,0)}
-function monthItems(){return items.filter(e=>e.date.startsWith(month))}
-function monthLabel(){const[y,m]=month.split("-");return y+"年"+Number(m)+"月"}
-function shiftMonth(n){const[y,m]=month.split("-").map(Number),d=new Date(y,m-1+n,1);month=d.getFullYear()+"-"+pad(d.getMonth()+1);render()}
-const sum=a=>a.reduce((s,e)=>s+e.amount,0);
-const NOTE='<div class="note">🔒 データはこの端末のブラウザ内にだけ保存されています</div>';
+        <!-- 液晶画面 -->
+        <div class="display">
+            <div id="formula"></div>
+            <div id="result">0</div>
+        </div>
 
-function render(){
-  if(view==="home")return home();
-  if(view==="list")return list();
-  if(view==="form")return form();
-}
+        <!-- キーパッド -->
+        <div class="buttons">
+            <button class="btn-clear" onclick="clearAll()">C</button>
+            <button class="btn-op" onclick="append('(')">(</button>
+            <button class="btn-op" onclick="append(')')">)</button>
+            <button class="btn-op" onclick="append('/')">÷</button>
 
-function monthNav(){return `<div class="mon"><button onclick="shiftMonth(-1)" aria-label="前の月">‹</button><b>${monthLabel()}</b><button onclick="shiftMonth(1)" aria-label="次の月">›</button></div>`}
+            <button class="btn-num" onclick="append('7')">7</button>
+            <button class="btn-num" onclick="append('8')">8</button>
+            <button class="btn-num" onclick="append('9')">9</button>
+            <button class="btn-op" onclick="append('*')">×</button>
 
-function home(){
-  const a=monthItems(),un=a.filter(e=>e.status==="unpaid"),pd=a.filter(e=>e.status==="paid"),nr=a.filter(e=>e.receipt==="none");
-  app.innerHTML=`<div class="top"><h1>おつかれさま ✨</h1></div>${NOTE}${monthNav()}
-  <div class="hero"><small>${monthLabel()}の立替金</small><b>${yen(sum(a))}</b><small>全${a.length}件</small></div>
-  <div class="two"><div class="box" style="background:var(--or-bg);color:var(--or)"><small>精算未</small><b>${yen(sum(un))}</b><small>${un.length}件</small></div>
-  <div class="box" style="background:var(--mi-bg);color:var(--mi)"><small>精算済み</small><b>${yen(sum(pd))}</b><small>${pd.length}件</small></div></div>
-  <div class="box" style="background:var(--am-bg);color:var(--am)"><small>領収書なし</small><b>${nr.length}件</b> <small style="display:inline">${yen(sum(nr))}</small></div>
-  <div class="menu"><button class="main" onclick="newItem()">＋ 登録する</button><button onclick="go('list')">📋 一覧</button>
-  <button class="off" disabled>📊 月別集計<br><small>あとで追加</small></button><button class="off" disabled>💾 バックアップ<br><small>あとで追加</small></button></div>`;
-}
+            <button class="btn-num" onclick="append('4')">4</button>
+            <button class="btn-num" onclick="append('5')">5</button>
+            <button class="btn-num" onclick="append('6')">6</button>
+            <button class="btn-op" onclick="append('-')">-</button>
 
-function list(){
-  let a=monthItems().filter(e=>(filt.st==="all"||e.status===filt.st)&&(!filt.nr||e.receipt==="none"));
-  const chip=(k,v,t)=>`<button class="chip ${filt[k]===v?"on":""}" onclick="setF('${k}',${typeof v==="string"?"'"+v+"'":v})">${t}</button>`;
-  app.innerHTML=`<div class="top"><button class="back" onclick="go('home')" aria-label="戻る">‹</button><h1>立替一覧</h1></div>${monthNav()}
-  <div class="chips">${chip("st","all","すべて")}${chip("st","unpaid","精算未")}${chip("st","paid","精算済み")}<button class="chip ${filt.nr?"on":""}" onclick="filt.nr=!filt.nr;render()">領収書なし</button></div>
-  <div class="sub" style="margin-bottom:8px">${a.length}件　合計 ${yen(sum(a))}</div>
-  ${a.length?a.map(e=>`<button class="row" onclick="editItem('${e.id}')"><div class="ic">${catIcon(e.category)}</div><div class="grow"><div>${esc(e.payee)}</div><div class="sub">${Number(e.date.slice(5,7))}/${Number(e.date.slice(8))}　${esc(e.category)}${e.receipt==="none"?' <span class="tag tn">領収書なし</span>':""}</div></div><div class="amt">${yen(e.amount)}<br><span class="tag ${e.status==="paid"?"t1":"t0"}">${e.status==="paid"?"精算済み":"精算未"}</span></div></button>`).join(""):'<div class="empty">まだ登録がありません。<br>右下の ＋ から追加できます。</div>'}
-  <button class="fab" onclick="newItem()" aria-label="立替金を登録">＋</button>`;
-}
-function setF(k,v){filt[k]=v;render()}
+            <button class="btn-num" onclick="append('1')">1</button>
+            <button class="btn-num" onclick="append('2')">2</button>
+            <button class="btn-num" onclick="append('3')">3</button>
+            <button class="btn-op" onclick="append('+')">+</button>
 
-function newItem(){f={id:null,date:today(),payee:"",amount:"",category:"交通費",payment:"現金",purpose:"",receipt:"have",reason:"",note:"",status:"unpaid",paidDate:null,errs:{}};go("form")}
-function editItem(id){const e=items.find(x=>x.id===id);f={...e,amount:String(e.amount),errs:{}};go("form")}
+            <button class="btn-num" onclick="append('0')">0</button>
+            <button class="btn-num" onclick="append('.')">.</button>
+            
+            <!-- 👑 波動クリーニング（＝）ボタン -->
+            <button class="btn-equal" onclick="cleanseAndCalculate()">✨波動クリーニング✨</button>
+        </div>
+    </div>
 
-function sync(){const g=id=>$("#"+id);if(!g("f-payee"))return;f.payee=g("f-payee").value;f.amount=g("f-amount").value.replace(/\D/g,"");f.date=g("f-date").value;f.purpose=g("f-purpose").value;f.note=g("f-note").value}
-function pick(k,v){sync();f[k]=v;if(k==="receipt"&&v==="have")f.reason="";render()}
+    <script>
+        let currentInput = "";
+        const formulaDiv = document.getElementById("formula");
+        const resultDiv = document.getElementById("result");
+        const galSpeech = document.getElementById("galSpeech");
+        const flashLayer = document.getElementById("flashLayer");
 
-function form(){
-  const ch=(k,v,t)=>`<button type="button" class="chip ${f[k]===v?"on":""}" onclick="pick('${k}','${v}')">${t}</button>`;
-  const E=k=>f.errs[k]?`<div class="err">${f.errs[k]}</div>`:"";
-  app.innerHTML=`<div class="top"><button class="back" onclick="leave()" aria-label="戻る">‹</button><h1>${f.id?"立替を編集":"立替を登録"}</h1></div>
-  <label class="l" for="f-amount">金額（円）</label>
-  <input id="f-amount" class="big" inputmode="numeric" placeholder="0" value="${f.amount?Number(f.amount).toLocaleString("ja-JP"):""}" oninput="fmtAmt(this)">${E("amount")}
-  <label class="l">カテゴリー</label>
-  <div class="cats">${CATS.map(c=>`<button type="button" class="chip ${f.category===c[0]?"on":""}" onclick="pick('category','${c[0]}')"><span>${c[1]}</span>${c[0]}</button>`).join("")}</div>
-  <label class="l" for="f-payee">支払先・店名</label>
-  <input id="f-payee" placeholder="例：JR東日本" value="${esc(f.payee)}">${E("payee")}
-  <label class="l" for="f-date">支払日</label>
-  <input id="f-date" type="date" value="${f.date}">${E("date")}
-  <div class="chips"><button type="button" class="chip" onclick="sync();f.date=today();render()">今日</button><button type="button" class="chip" onclick="sync();f.date=yest();render()">昨日</button></div>
-  <label class="l" for="f-purpose">用途・摘要</label>
-  <input id="f-purpose" placeholder="例：客先訪問の電車代" value="${esc(f.purpose)}">
-  <label class="l">支払方法</label>
-  <div class="chips">${PAYS.map(p=>ch("payment",p,p)).join("")}</div>
-  <label class="l">領収書</label>
-  <div class="chips">${ch("receipt","have","あり")}${ch("receipt","none","なし")}</div>
-  ${f.receipt==="none"?`<label class="l">なしの理由</label><div class="chips">${REASONS.map(r=>ch("reason",r,r)).join("")}</div>${E("reason")}`:""}
-  <label class="l">精算</label>
-  <div class="chips">${ch("status","unpaid","精算未")}${ch("status","paid","精算済み")}</div>
-  <label class="l" for="f-note">備考</label>
-  <textarea id="f-note" rows="2">${esc(f.note)}</textarea>
-  <button class="save" onclick="save()">💗 ${f.id?"更新する":"保存する"}</button>
-  ${f.id?'<button class="del" onclick="remove()">この明細を削除</button>':""}`;
-}
-function fmtAmt(el){const d=el.value.replace(/\D/g,"").slice(0,9);el.value=d?Number(d).toLocaleString("ja-JP"):""}
-function leave(){sync();const dirty=f.payee||f.amount||f.purpose||f.note;if(!f.id&&dirty&&!confirm("入力した内容は保存されません。戻りますか？"))return;go("list")}
+        // ギャルのチャネリング褒め言葉リスト
+        const galPhrases = [
+            "ハイ答え出たー！てか数式と向き合ってるだけでマジ偉すぎてウケる！天才じゃん！",
+            "波動クリーニング完了☆ 濁ってた数字のバイブス、一瞬でアゲにしといたから！",
+            "今の計算のエネルギー、マジで『豊かさの循環』キテる。あんたのオーラ超きらめいてるよ！",
+            "だるい計算もウチらの魔法（呪文）にかかれば一瞬っしょ！うちらズッ友レベルで相性いいわ！",
+            "宇宙からのカンペ受信完了ー！この調子でサクッと宿題終わらせて、最強の波動で明日学校乗り込も！"
+        ];
 
-async function save(){
-  if(saving)return;sync();
-  const errs={},amt=parseInt(f.amount,10);
-  if(!amt||amt<1)errs.amount="金額を入力してください";
-  if(!f.payee.trim())errs.payee="支払先を入力してください";
-  if(!/^\d{4}-\d{2}-\d{2}$/.test(f.date))errs.date="支払日を選んでください";
-  if(f.receipt==="none"&&!f.reason)errs.reason="理由を選んでください";
-  f.errs=errs;
-  if(Object.keys(errs).length){render();const e=document.querySelector(".err");if(e)e.scrollIntoView({block:"center"});return}
-  const dup=!f.id&&items.some(e=>e.date===f.date&&e.amount===amt&&e.payee===f.payee.trim());
-  if(dup&&!confirm("同じ日・同じ金額・同じ支払先の明細があります。もう一度登録しますか？"))return;
-  const old=f.id&&items.find(x=>x.id===f.id);
-  let paidDate=null;if(f.status==="paid")paidDate=(old&&old.status==="paid"&&old.paidDate)||today();
-  const rec={id:f.id||(crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random().toString(16).slice(2)),date:f.date,payee:f.payee.trim(),amount:amt,category:f.category,payment:f.payment,purpose:f.purpose.trim(),receipt:f.receipt,reason:f.receipt==="none"?f.reason:"",note:f.note.trim(),status:f.status,paidDate,createdAt:old?old.createdAt:Date.now(),updatedAt:Date.now()};
-  saving=true;
-  try{await tx("readwrite",s=>s.put(rec));await loadAll();month=rec.date.slice(0,7);toast(f.id?"更新しました":"保存しました");go("list")}
-  catch(e){alert("保存できませんでした。もう一度お試しください。\n（"+(e&&e.message||"原因不明")+"）")}
-  finally{saving=false}
-}
-async function remove(){
-  if(!confirm("この明細を削除します。元に戻せません。よろしいですか？"))return;
-  try{await tx("readwrite",s=>s.delete(f.id));await loadAll();toast("削除しました");go("list")}
-  catch(e){alert("削除できませんでした。もう一度お試しください。")}
-}
+        function append(val) {
+            // 見た目の記号を分かりやすく
+            let displayVal = val;
+            if (val === '*') displayVal = '×';
+            if (val === '/') displayVal = '÷';
+            
+            currentInput += val;
+            formulaDiv.innerText += displayVal;
+        }
 
-(async()=>{
-  try{db=await openDB();await loadAll();if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();render()}
-  catch(e){app.innerHTML='<div class="empty">データの保存場所を開けませんでした。<br>プライベートブラウズを使っている場合は、通常のタブで開いてください。</div>'}
-})();
-</script>
+        function clearAll() {
+            currentInput = "";
+            formulaDiv.innerText = "";
+            resultDiv.innerText = "0";
+            galSpeech.innerText = "「おっけー、全部クリア！波動ニュートラルに戻したから、次いこ次！」";
+        }
+
+        function cleanseAndCalculate() {
+            if (!currentInput) return;
+
+            // ① 画面を一瞬光らせてクリーニング（浄化エフェクト）
+            flashLayer.style.opacity = "0.6";
+            setTimeout(() => { flashLayer.style.opacity = "0"; }, 300);
+
+            // ② 計算処理
+            try {
+                // 安全な計算処理（evalの代わり）
+                let calculatedResult = Function('"use strict";return (' + currentInput + ')')();
+                
+                // 小数点第4位までに丸める
+                if (!Number.isInteger(calculatedResult)) {
+                    calculatedResult = Math.round(calculatedResult * 10000) / 10000;
+                }
+
+                resultDiv.innerText = calculatedResult;
+
+                // ③ ギャルのセリフをランダムでチャネリング
+                const randomPhrase = galPhrases[Math.floor(Math.random() * galPhrases.length)];
+                galSpeech.innerText = `「${randomPhrase}」`;
+
+            } catch (error) {
+                resultDiv.innerText = "エラー";
+                galSpeech.innerText = "「あ、数式のバイブス狂っちゃってエラー出たわ（笑）！Cボタンで一回クリーニングして、もう一回教えて？」";
+            }
+        }
+    </script>
 </body>
 </html>
