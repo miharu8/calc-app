@@ -41,6 +41,9 @@ const B=[
 [9,'二次方程式','因数分解か解の公式で解きます。',[['x² − 5x + 6 = 0','x^2-5x+6=0',''],['x² − 9 = 0','x^2-9=0',''],['x² + 2x + 1 = 0','x^2+2x+1=0','']]],
 [9,'平方根・三平方の定理','直角三角形の斜辺² = 他の2辺²の和',[['√49 + 3 は？','√49+3',''],['直角をはさむ辺が 3 と 4。斜辺²は？','3^2+4^2','']]],
 [9,'確率・データ','確率 = 起こる場合の数 ÷ すべての場合の数',[['サイコロで偶数が出る確率は？','3/6',''],['5, 8, 6, 9, 7 の平均は？','(5+8+6+9+7)÷5','']]]];
+const USE={"たし算・ひき算": "お菓子やジュースの合計と、おつりを出す時に使うよ！", "九九・かけ算": "同じ値段のものを何個か買う時、「1個の値段×個数」で一気に出せる！", "大きな数・わり算": "人数でお菓子を同じ数ずつ分ける時や、ぜんぶで何円かを出す時に使うよ。", "長方形の面積": "部屋のゆかの広さや、畑・コートの広さをくらべる時に使えるよ！", "小数": "身長・体重・タイムみたいな、はんぱな数の計算で出てくる！", "分数のたし引き": "ピザやケーキを「何個分食べたか」合計する時にそのまま使えるよ。", "約分・通分": "分数をスッキリ簡単にしたり、ちがう分母をそろえてくらべる時に使うよ！", "面積・体積": "プールに水が何L入るか、箱に荷物が入るかを考える時に使うよ。", "割合": "セールの「25%OFF」や、テストの正答率を出す時に超使う！", "速さ・時間・距離": "「家から駅まで何分？」「何時に着く？」を計算できるよ。", "分数のかけ算・わり算": "ケーキの2/3を3人で分ける、みたいに「ひと切れの量」を出す時に使うよ。", "分数・小数の混合計算": "わりびきと税金が混ざったお買い物を、順番をまちがえずに計算する時に使うよ！", "比例・□を使った式": "「□円のものを3個買って300円」みたいに、わからない数を□にして探す時に使うよ。", "円の面積・角度": "ピザの大きさ比べや、三角形の残りの角度を出す時に使うよ！", "正負の数": "気温の上がり下がりや、おこづかいの増えた減ったを計算する時に使うよ。", "文字式": "いろんな値段に使える「ルール」を1つの式で書ける。例：1個x円を3個で 3x 円！", "一次方程式": "「何日でお金が貯まる？」「いくつ買える？」みたいに、わからない数を見つける時に使うよ！", "比例・反比例": "「時間が2倍なら道のりも2倍」「人が増えると1人分が減る」を式にできるよ。", "図形（おうぎ形・体積）": "ホールケーキの一切れや、缶ジュースの中身の量を出す時に使うよ。", "連立方程式": "「りんご1個とみかん1個で○円」みたいに、わからない数が2つある時に使うよ！", "不等式": "「予算1000円以内で何個まで買える？」みたいに、いくつまでOKかを決める時に使うよ。", "一次関数": "スマホ料金のように「基本料金＋使った分」で金額が変わる時を式にできる！", "式の計算・展開": "カッコつきの式をバラして、面積の公式をつくる時に使うよ。", "展開・因数分解": "ぐちゃぐちゃの式をスッキリ短くして、方程式を解きやすくするよ！", "二次方程式": "ボールが飛ぶ高さや、「面積がこうなる四角形のたてよこは？」を出す時に使うよ。", "平方根・三平方の定理": "はしごの長さや、テレビ画面のななめの長さを出す時に使うよ！", "確率・データ": "くじの当たりやすさや、テストの平均点・クラスの結果を比べる時に使うよ。"};
+const useOf=e=>/[<>≤≥]/.test(e)?'予算や制限の中で「いくつまでOK？」を決める時に使うよ。':/[、,]/.test(e)?'わからない数が2つある時、2つのヒントから見つけるのに使うよ！':/\^2/.test(e)&&/=/.test(e)?'ボールの高さや、面積から四角形のたてよこを出す時に使うよ。':/因数分解/.test(e)?'長い式をスッキリ短くして、方程式を解きやすくする時に使うよ！':/=/.test(e)?'「何日で貯まる？」「いくつ買える？」みたいに、わからない数を見つける時に使うよ！':/x|y/.test(e)?'カッコつきの式をバラして整理して、あとの計算をラクにする時に使うよ。':'お買い物の合計やわりびきなど、毎日の計算で順番を守る時に使うよ。';
+const NM=p=>p.ui!==undefined?G[B[p.ui][0]]+' '+B[p.ui][1]:'自分で入力した式';
 const L=()=>{try{return JSON.parse(localStorage.getItem('fm1'))||{rev:{},his:[]}}catch(e){return{rev:{},his:[]}}};
 const S=d=>{try{localStorage.setItem('fm1',JSON.stringify(d))}catch(e){}};
 const $=document.getElementById('app'),esc=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
@@ -56,7 +59,7 @@ $.querySelector('#go').onclick=()=>{const v=$.querySelector('#in').value;if(v.tr
 $.querySelector('#in').onkeydown=e=>{if(e.key==='Enter')$.querySelector('#go').click()};
 $.querySelector('#ph').onclick=()=>$.querySelector('#pm').innerHTML='<div class="c">写真の読み取りは、まだ使えません。いまは「文字で入力」か「学年から選ぶ」をお使いください。</div>';
 $.querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>{gr=+b.dataset.g;home()});$.querySelectorAll('[data-u]').forEach(b=>b.onclick=()=>unit(+b.dataset.u))}
-function unit(i){const u=B[i];$.innerHTML=`<button class="bk" id="bk">← もどる</button><h1>${G[u[0]]} ${u[1]}</h1><div class="t">${u[2]}</div><h2>問題</h2>`+u[3].map((p,j)=>`<button class="b bl" data-p="${j}">${esc(p[0])}</button>`).join('');
+function unit(i){const u=B[i];$.innerHTML=`<button class="bk" id="bk">← もどる</button><h1>${G[u[0]]} ${u[1]}</h1><div class="t">${u[2]}</div><div class="c mt" style="margin-top:10px"><b>どんな時に使う？</b><br>${USE[u[1]]||""}</div><h2>問題</h2>`+u[3].map((p,j)=>`<button class="b bl" data-p="${j}">${esc(p[0])}</button>`).join('');
 $.querySelector('#bk').onclick=home;$.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{const p=u[3][+b.dataset.p];open({q:p[0],e:p[1],u:p[2],h:u[2],ui:i,pj:+b.dataset.p})})}
 function open(p){cur=p;pr()}
 function pr(){const p=cur,r=Solve(p.e),k=p.q+'|'+p.e;if(!r.ok){$.innerHTML=`<button class="bk" id="bk">← もどる</button><div class="c"><div class="q">${esc(p.q)}</div></div><div class="c err"><pre>${esc(r.err)}</pre></div>`;$.querySelector('#bk').onclick=home;return}
@@ -64,16 +67,18 @@ $.innerHTML=`<button class="bk" id="bk">← もどる</button><div class="c"><di
 <div class="c ans"><div class="t" style="color:#2D6B55">答え</div><div class="q">${esc(r.ans)} ${esc(p.u)}</div></div>
 <button class="b bl" id="ex">解説を見る</button><div id="exb" hidden class="c">${r.steps.map(s=>`<p class="st">${esc(s)}</p>`).join('')}</div>
 <button class="b lv" id="hn">ヒントを見る</button><div id="hb" hidden class="c">${esc(p.h||'式を読み取って、計算の順番や移項（左右に移す）の考え方を確認しましょう。')}</div>
+<button class="b mt" id="us">どんな時に使う？</button><div id="ub" hidden class="c">${esc(p.ui!==undefined?USE[B[p.ui][1]]:useOf(p.e))}</div>
 <div class="row"><button class="b mt" id="ok" style="justify-content:center">できた</button><button class="b pk" id="rv" style="justify-content:center">復習する</button></div><div id="mg" class="t">${msg}</div>
 ${p.ui!==undefined&&B[p.ui][3][p.pj+1]?'<button class="b gy" id="nx" style="justify-content:center">次の問題へ</button>':''}`;msg='';
 const t=id=>$.querySelector(id);t('#bk').onclick=()=>cur.ui!==undefined?unit(cur.ui):home();
-t('#ex').onclick=()=>t('#exb').hidden=!t('#exb').hidden;t('#hn').onclick=()=>t('#hb').hidden=!t('#hb').hidden;
-t('#ok').onclick=()=>{const d=L();d.his.unshift({k,q:p.q,r:'ok',t:Date.now()});d.his=d.his.slice(0,300);if(d.rev[k])delete d.rev[k];S(d);t('#mg').textContent='記録しました。復習リストからも外しました。'};
-t('#rv').onclick=()=>{const d=L();d.his.unshift({k,q:p.q,r:'rv',t:Date.now()});d.his=d.his.slice(0,300);const o=d.rev[k]||{q:p.q,e:p.e,u:p.u,h:p.h,ui:p.ui,pj:p.pj,t:p.t,miss:0};o.miss++;d.rev[k]=o;S(d);t('#mg').textContent='復習リストに入れました（'+o.miss+'回目）。'};
+t('#ex').onclick=()=>t('#exb').hidden=!t('#exb').hidden;t('#us').onclick=()=>t('#ub').hidden=!t('#ub').hidden;t('#hn').onclick=()=>t('#hb').hidden=!t('#hb').hidden;
+t('#ok').onclick=()=>{const d=L();d.his.unshift({k,q:p.q,r:'ok',n:NM(p),t:Date.now()});d.his=d.his.slice(0,300);if(d.rev[k])delete d.rev[k];S(d);t('#mg').textContent='記録しました。復習リストからも外しました。'};
+t('#rv').onclick=()=>{const d=L();d.his.unshift({k,q:p.q,r:'rv',n:NM(p),t:Date.now()});d.his=d.his.slice(0,300);const o=d.rev[k]||{q:p.q,e:p.e,u:p.u,h:p.h,ui:p.ui,pj:p.pj,t:p.t,miss:0};o.miss++;d.rev[k]=o;S(d);t('#mg').textContent='復習リストに入れました（'+o.miss+'回目）。'};
 if(t('#nx'))t('#nx').onclick=()=>{const u=B[p.ui][3][p.pj+1];open({q:u[0],e:u[1],u:u[2],h:p.h,ui:p.ui,pj:p.pj+1})}}
 function rev(){const d=L(),a=Object.values(d.rev).sort((x,y)=>y.miss-x.miss);$.innerHTML=`<h1>復習リスト</h1><div class="t">まちがえた回数が多い順</div><h2>${a.length}問</h2>`+(a.map((p,i)=>`<button class="b pk" data-r="${i}"><span>${esc(p.q)}<small>${p.miss}回</small></span></button>`).join('')||'<div class="c">まだありません。問題で「復習する」を押すと、ここに入ります。</div>');
 $.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>open(a[+b.dataset.r]))}
-function his(){const d=L(),u={};d.his.forEach(h=>{});$.innerHTML=`<h1>学習履歴</h1><div class="t">新しい順（最大300件）</div><h2>${d.his.length}件</h2>`+(d.his.slice(0,60).map(h=>`<div class="c"><div>${esc(h.q)}</div><div class="t">${new Date(h.t).toLocaleString('ja-JP')} ・ ${h.r==='ok'?'できた':'復習'}</div></div>`).join('')||'<div class="c">まだありません。</div>')}
+function his(){const d=L(),m={};d.his.forEach(x=>{const n=x.n||'その他';m[n]=m[n]||{ok:0,rv:0};m[n][x.r]++});
+$.innerHTML=`<h1>学習履歴</h1><h2>やった単元</h2>`+(Object.keys(m).map(n=>`<div class="c"><div>${esc(n)}</div><div class="t">できた ${m[n].ok}回 ・ 復習 ${m[n].rv}回</div></div>`).join('')||'<div class="c">まだありません。問題で「できた」か「復習する」を押すと、ここに出るよ。</div>')+`<h2>最近のきろく（新しい順）</h2>`+d.his.slice(0,40).map(x=>`<div class="c"><div>${esc(x.q)}</div><div class="t">${new Date(x.t).toLocaleString('ja-JP')} ・ ${x.r==='ok'?'できた':'復習'}</div></div>`).join('')}
 window.onerror=()=>{$.innerHTML='<div class="c err">うまく動きませんでした。ホームに戻ってやり直してください。</div>'};
 go('home');
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').then(r=>r.update());let rl=0;navigator.serviceWorker.addEventListener('controllerchange',()=>{if(!rl&&localStorage.getItem('fmsw')){rl=1;location.reload()}localStorage.setItem('fmsw','1')})}
