@@ -1,319 +1,80 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#eaf2ff">
-<title>FROST MATH｜自分のペースで、わかるを増やす</title>
+<!DOCTYPE html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>FROST MATH</title>
+<link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="icon-180.png"><meta name="theme-color" content="#F6F3FC"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="FROST MATH">
 <style>
-:root{
-  --ink:#34445b;--muted:#74839a;--blue:#dcecff;--lav:#e9e2ff;
-  --pink:#ffe5ef;--mint:#def5ed;--white:#fff;--line:#e5eaf2;
-  --accent:#829fd0;--shadow:0 12px 32px rgba(91,119,160,.12);
-}
-*{box-sizing:border-box}
-body{margin:0;background:linear-gradient(145deg,#f4f8ff 0%,#f8f3ff 48%,#fff6f8 100%);color:var(--ink);
- font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Hiragino Kaku Gothic ProN","Noto Sans JP",Meiryo,sans-serif;min-height:100vh}
-button,input,select,textarea{font:inherit}
-button{cursor:pointer}
-.app{width:min(100%,850px);margin:0 auto;padding:18px 15px 42px}
-header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:4px 2px 18px}
-.brand{font-weight:850;letter-spacing:.12em;font-size:clamp(22px,5vw,30px);color:#7896c4}
-.brand small{display:block;font-size:10px;letter-spacing:.16em;color:#91a0b6;font-weight:600;margin-top:3px}
-.top-chip{background:#fff9;border:1px solid #fff;padding:8px 12px;border-radius:99px;color:#7889a2;font-size:12px}
-.hero{background:linear-gradient(120deg,#e3efff,#eee8ff 58%,#ffeaf1);border:1px solid #fff;border-radius:25px;padding:22px 20px;box-shadow:var(--shadow);margin-bottom:16px}
-.hero h1{font-size:clamp(20px,5vw,27px);margin:0 0 7px;letter-spacing:.02em}
-.hero p{margin:0;color:#697d99;font-size:13px;line-height:1.7}
-.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:16px 0}
-.tab{border:1px solid #e8eaf4;background:#ffffffb8;border-radius:15px;padding:13px 6px;color:#73829a;font-weight:700;font-size:13px}
-.tab.active{background:#dfeaff;border-color:#cbdcf7;color:#5575a8;box-shadow:0 5px 14px #b8c9e633}
-.panel{background:#ffffffdc;border:1px solid #fff;border-radius:22px;padding:18px;box-shadow:var(--shadow);margin-bottom:14px}
-.panel h2{font-size:17px;margin:0 0 13px}
-label{display:block;font-size:12px;font-weight:700;color:#75849b;margin:12px 0 6px}
-input[type=text],textarea,select{width:100%;border:1px solid #dfe6f0;background:#fbfdff;border-radius:13px;padding:13px;color:var(--ink);outline:none}
-input:focus,textarea:focus,select:focus{border-color:#a9bee6;box-shadow:0 0 0 3px #dce8fb88}
-textarea{min-height:90px;resize:vertical;line-height:1.6}
-.row{display:flex;gap:9px;flex-wrap:wrap}
-.row>*{flex:1;min-width:110px}
-.primary{border:0;border-radius:14px;padding:13px 17px;background:linear-gradient(110deg,#a9c8f2,#c8b9ef);color:#fff;font-weight:800;box-shadow:0 6px 15px #aebfe544}
-.secondary{border:1px solid #dfe7f2;border-radius:14px;padding:12px 15px;background:#f8fbff;color:#6e83a5;font-weight:700}
-.soft{border:1px solid #f0dce7;background:#fff7fa;color:#a77991;border-radius:12px;padding:10px 13px;font-weight:700}
-.note{font-size:12px;color:#8491a5;line-height:1.65;margin:9px 0 0}
-.answer{background:linear-gradient(120deg,#edf5ff,#f3efff);border:1px solid #e2eafa;border-radius:18px;padding:17px;margin-top:15px}
-.answer .eyebrow{font-size:11px;color:#8296b8;font-weight:800;letter-spacing:.08em}
-.answer .value{font-size:clamp(25px,7vw,36px);font-weight:850;color:#5c79aa;overflow-wrap:anywhere;margin:5px 0 0}
-details{margin-top:12px;border-top:1px solid #e3eaf4;padding-top:11px}
-summary{cursor:pointer;color:#7186a8;font-weight:750;font-size:13px}
-.explain{font-size:14px;line-height:1.8;color:#596a82;white-space:pre-wrap;margin-top:10px}
-.hidden{display:none!important}
-.topic-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
-.topic{border:1px solid #e5eaf3;border-radius:15px;padding:13px;background:#fbfdff;text-align:left;color:#526783}
-.topic strong{display:block;font-size:13px;margin-bottom:4px}
-.topic span{font-size:11px;color:#8a98ac}
-.question-card{background:#f8fbff;border:1px solid #e6edf7;border-radius:16px;padding:15px;margin-top:13px}
-.question{font-size:19px;font-weight:800;line-height:1.6;text-align:center;padding:10px 2px}
-.q-actions{display:flex;gap:8px;flex-wrap:wrap}
-.q-actions button{flex:1}
-.progress{height:8px;background:#edf1f7;border-radius:99px;overflow:hidden;margin-top:8px}
-.progress>i{display:block;height:100%;background:linear-gradient(90deg,#a9c8f2,#c9b8ed);width:0}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.stat{background:#f8fbff;border-radius:14px;padding:12px;text-align:center}
-.stat b{display:block;font-size:20px;color:#7794c1}
-.stat span{font-size:10px;color:#8996a9}
-.preview{width:100%;max-height:300px;object-fit:contain;background:#f5f8fc;border-radius:14px;margin-top:10px}
-footer{text-align:center;color:#a0aabd;font-size:11px;padding:12px}
-@media(max-width:480px){.app{padding:13px 11px 30px}.panel{padding:15px}.hero{padding:19px 16px}.topic-grid{grid-template-columns:1fr 1fr}.tab{font-size:12px}}
-</style>
-</head>
-<body>
-<div class="app">
-<header><div class="brand">FROST MATH<small>LEARN AT YOUR OWN PACE</small></div><div class="top-chip">わかるを、ひとつずつ。</div></header>
-<section class="hero"><h1>今日は、ひとつわかれば十分。</h1><p>答えを先に見ても大丈夫。必要なときだけ解き方を確認しよう。小学校の算数から高校数学まで、自分のペースで進められます。</p></section>
-
-<nav class="tabs" aria-label="学習メニュー">
-<button class="tab active" data-tab="solve">✎ 問題を解く</button>
-<button class="tab" data-tab="photo">▧ 写真から</button>
-<button class="tab" data-tab="topics">◇ 単元から</button>
-</nav>
-
-<section id="solve" class="panel">
-<h2>問題を入力する</h2>
-<label for="expression">計算式・方程式を入力</label>
-<input id="expression" type="text" placeholder="例：3*(12-4)+6 / 3x+5=20" autocomplete="off">
-<div class="row" style="margin-top:10px">
-<button class="primary" id="solveBtn">答えを見る</button>
-<button class="secondary" id="clearBtn">クリア</button>
-</div>
-<div id="solveResult" class="hidden"></div>
-<p class="note">四則演算・括弧・小数・分数形式の計算に対応。一次方程式は「3x+5=20」のように入力できます。複雑な文章題や図形問題は、単元選択または写真で確認してください。</p>
-</section>
-
-<section id="photo" class="panel hidden">
-<h2>宿題の写真から</h2>
-<label for="photoInput">写真を撮る、または画像を選ぶ</label>
-<input id="photoInput" type="file" accept="image/*" capture="environment">
-<img id="photoPreview" class="preview hidden" alt="選択した宿題の写真">
-<div class="row" style="margin-top:10px">
-<button class="primary" id="ocrBtn" disabled>写真の文字を読み取る</button>
-<button class="secondary" id="removePhotoBtn">写真を消す</button>
-</div>
-<div id="ocrStatus" class="note">写真の文字読み取りには初回のみ無料のOCRライブラリを読み込みます。画像はこの端末内で処理し、サーバーへ送信しません。</div>
-<label for="ocrText">読み取った文字（必ず確認・修正してください）</label>
-<textarea id="ocrText" placeholder="読み取り結果がここに表示されます。数式の記号や数字は誤認識することがあるため、写真と見比べて修正してください。"></textarea>
-<button class="primary" id="useOcrBtn" style="width:100%;margin-top:10px">この内容で答えを確認する</button>
-<div id="photoResult" class="hidden"></div>
-<p class="note">注意：無料OCRは数式・分数・図形・手書き文字を正確に認識できるとは限りません。読み取り結果を確認してから使ってください。</p>
-</section>
-
-<section id="topics" class="panel hidden">
-<h2>学年・単元から選ぶ</h2>
-<div class="row">
-<div><label for="school">学習段階</label><select id="school"><option value="小学校">小学校</option><option value="中学校" selected>中学校</option><option value="高校">高校</option></select></div>
-<div><label for="grade">学年</label><select id="grade"></select></div>
-</div>
-<div id="topicList" class="topic-grid" style="margin-top:13px"></div>
-<div id="topicQuestion" class="question-card hidden">
-<div class="eyebrow" id="topicMeta"></div>
-<div class="question" id="topicPrompt"></div>
-<div class="answer"><div class="eyebrow">答え</div><div class="value" id="topicAnswer"></div></div>
-<details><summary>解き方・考え方を見る</summary><div class="explain" id="topicExplain"></div></details>
-<div class="q-actions" style="margin-top:13px">
-<button class="secondary" id="nextQuestion">別の問題</button>
-<button class="soft" id="markDone">できた・復習に記録</button>
-</div>
-</div>
-</section>
-
-<section class="panel">
-<h2>小さな積み重ね</h2>
-<div class="stats">
-<div class="stat"><b id="solvedCount">0</b><span>確認した問題</span></div>
-<div class="stat"><b id="reviewCount">0</b><span>復習リスト</span></div>
-<div class="stat"><b id="streakCount">0</b><span>学習した日</span></div>
-</div>
-<div class="progress"><i id="progressBar"></i></div>
-<p class="note" id="encourage">最初の1問から始めよう。途中でやめても大丈夫。</p>
-<button class="secondary" id="showReview" style="width:100%;margin-top:8px">復習リストを見る</button>
-<div id="reviewList" class="hidden"></div>
-</section>
-<footer>FROST MATH · 学習データはこの端末のブラウザ内に保存されます。</footer>
-</div>
-
+*{box-sizing:border-box}body{margin:0;background:#F6F3FC;color:#2B2F42;font:16px/1.6 -apple-system,"Hiragino Sans",sans-serif;padding-bottom:84px}
+main{max-width:560px;margin:0 auto;padding:16px 16px env(safe-area-inset-bottom)}h1{font-size:20px;letter-spacing:1px;color:#4B3F8F;margin:6px 0 2px}h2{font-size:16px;margin:16px 0 8px;color:#6B6F85;font-weight:500}
+.c{background:#fff;border-radius:14px;padding:14px;margin-bottom:10px}.b{display:flex;align-items:center;gap:12px;width:100%;border:0;border-radius:14px;padding:14px;margin-bottom:10px;font:500 16px inherit;text-align:left;cursor:pointer;font-family:inherit}
+.bl{background:#DCEBFA;color:#2F5A8A}.pk{background:#FBE4EC;color:#8A3A58}.mt{background:#DDF3EA;color:#2D6B55}.lv{background:#E9E4F8;color:#4B3F8F}.gy{background:#ECEAF2;color:#8B8EA0}
+small{display:block;font-weight:400;font-size:12px;opacity:.85}.chip{display:inline-block;border:0;padding:8px 14px;border-radius:99px;background:#fff;color:#4B3F8F;margin:0 4px 6px 0;font:inherit;font-size:14px}.chip.on{background:#4B3F8F;color:#fff}
+input,textarea{width:100%;font:inherit;font-size:18px;padding:12px;border:1px solid #D9D3EE;border-radius:12px;background:#fff;color:#2B2F42}.q{font-size:24px;font-weight:500;word-break:break-all}.ans{background:#DDF3EA;color:#2D6B55}pre{white-space:pre-wrap;font:inherit;margin:0}
+.st{margin:0 0 8px}.row{display:grid;grid-template-columns:1fr 1fr;gap:8px}nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #E3DEF3;display:flex;padding-bottom:env(safe-area-inset-bottom)}nav button{flex:1;border:0;background:none;padding:12px 0;font:inherit;font-size:13px;color:#6B6F85}nav .on{color:#4B3F8F;font-weight:600}.err{background:#FBE4EC;color:#8A3A58}.t{font-size:12px;color:#6B6F85}.bk{background:none;border:0;color:#4B3F8F;font:inherit;padding:4px 0}
+</style></head><body><main id="app"></main>
+<nav><button data-v="home">ホーム</button><button data-v="rev">復習</button><button data-v="his">履歴</button></nav>
+<script src="engine.js"></script>
 <script>
-const $=id=>document.getElementById(id);
-const STORAGE="frostMathProgressV1";
-let progress=JSON.parse(localStorage.getItem(STORAGE)||'{"solved":0,"review":[],"days":[]}');
-function save(){localStorage.setItem(STORAGE,JSON.stringify(progress));renderStats()}
-function renderStats(){
- $("solvedCount").textContent=progress.solved;
- $("reviewCount").textContent=progress.review.length;
- $("streakCount").textContent=progress.days.length;
- $("progressBar").style.width=Math.min(100,progress.solved/30*100)+"%";
- const messages=["最初の1問から始めよう。途中でやめても大丈夫。","いいペース。ひとつずつ進めよう。","昨日より少し前進。それで十分。","積み重ねが力になっているよ。"];
- $("encourage").textContent=messages[Math.min(3,Math.floor(progress.solved/5))];
-}
-function recordSolved(){
- progress.solved++;
- const today=new Date().toISOString().slice(0,10);
- if(!progress.days.includes(today))progress.days.push(today);
- save();
-}
-function addReview(label){
- if(!progress.review.includes(label))progress.review.push(label);
- save();
-}
-function showAnswer(container,answer,explanation,title="答え"){
- container.classList.remove("hidden");
- container.innerHTML=`<div class="answer"><div class="eyebrow">${title}</div><div class="value">${escapeHtml(String(answer))}</div><details><summary>解き方を見る</summary><div class="explain">${escapeHtml(explanation)}</div></details></div>`;
- recordSolved();
-}
-function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
-
-/* 数式パーサー：eval / Function を使わず四則演算を計算 */
-function tokenize(s){
- s=s.replace(/[×✕]/g,"*").replace(/[÷／]/g,"/").replace(/−/g,"-").replace(/\s+/g,"");
- const tokens=[];let i=0;
- while(i<s.length){
-  const rest=s.slice(i);
-  const num=rest.match(/^(?:\d+\.?\d*|\.\d+)/);
-  if(num){tokens.push({t:"n",v:Number(num[0])});i+=num[0].length;continue}
-  const ch=s[i];
-  if("+-*/()".includes(ch)){tokens.push({t:ch});i++;continue}
-  throw Error("使えない文字「"+ch+"」があります。×・÷・括弧を確認してください。");
- }
- return tokens;
-}
-function calculate(s){
- const t=tokenize(s);let p=0;
- function expr(){let v=term();while(t[p]&&(t[p].t==="+"||t[p].t==="-")){let op=t[p++].t,r=term();v=op==="+"?v+r:v-r}return v}
- function term(){let v=factor();while(t[p]&&(t[p].t==="*"||t[p].t==="/")){let op=t[p++].t,r=factor();if(op==="/"&&r===0)throw Error("0で割ることはできません。");v=op==="*"?v*r:v/r}return v}
- function factor(){if(!t[p])throw Error("式が途中で終わっています。");if(t[p].t==="+"||t[p].t==="-"){let op=t[p++].t;return(op==="-"?-1:1)*factor()}if(t[p].t==="("){p++;let v=expr();if(!t[p]||t[p++].t!==")")throw Error("括弧の対応を確認してください。");return v}if(t[p].t==="n")return t[p++].v;throw Error("数式の書き方を確認してください。")}
- const result=expr();if(p!==t.length)throw Error("式の続きを確認してください。");if(!Number.isFinite(result))throw Error("計算できない式です。");return Math.round((result+Number.EPSILON)*1e8)/1e8;
-}
-function solveInput(value,target){
- const s=value.trim();if(!s){target.classList.remove("hidden");target.innerHTML='<p class="note">まず問題を入力してください。</p>';return}
- try{
-  let answer,explanation;
-  if(s.includes("=")&&/[a-zA-Z]/.test(s)){
-   const m=s.match(/^\s*([+-]?\d*\.?\d*)\s*x\s*([+-]\s*\d*\.?\d*)?\s*=\s*([+-]?\d*\.?\d*)\s*$/i);
-   if(!m)throw Error("現在、文字式の方程式は「ax+b=c」の形に対応しています。例：3x+5=20");
-   const a=m[1]===""||m[1]==="+"?1:m[1]==="-"?-1:Number(m[1]);
-   const btxt=(m[2]||"").replace(/\s/g,"");const b=btxt?(btxt==="+"?1:btxt==="-"?-1:Number(btxt)):0;
-   const c=Number(m[3]);if(a===0)throw Error("xの係数が0のため、この形では解けません。");
-   answer="x = "+(Math.round(((c-b)/a+Number.EPSILON)*1e8)/1e8);
-   explanation=`${s}\n① 両辺から ${b} を引く（移項する）\n② ${a}x = ${c-b}\n③ 両辺を ${a} で割る\n④ x = ${(c-b)/a}`;
-  }else{
-   answer=calculate(s);
-   explanation=`入力した式：${s}\nかけ算・割り算を先に計算し、そのあと足し算・引き算をします。\n括弧がある場合は、括弧の中から計算します。`;
-  }
-  showAnswer(target,answer,explanation);
- }catch(e){target.classList.remove("hidden");target.innerHTML=`<div class="answer"><div class="eyebrow">入力を確認してね</div><div class="explain">${escapeHtml(e.message)}</div></div>`}
-}
-$("solveBtn").onclick=()=>$("solveResult").classList.add("hidden")||solveInput($("expression").value,$("solveResult"));
-$("clearBtn").onclick=()=>{$("expression").value="";$("solveResult").classList.add("hidden")};
-$("expression").addEventListener("keydown",e=>{if(e.key==="Enter")$("solveBtn").click()});
-
-/* 単元別のサンプル問題集。全問「答えを先に」表示 */
-const bank=[
-{school:"小学校",grade:"1年",topic:"たし算・ひき算",q:"8 + 7 = ?",a:"15",e:"8に2を足すと10。7のうち残りは5なので、10+5=15。"},
-{school:"小学校",grade:"1年",topic:"たし算・ひき算",q:"14 − 6 = ?",a:"8",e:"14から6をひくと8。10をいったん通ると考えると分かりやすいよ。"},
-{school:"小学校",grade:"2年",topic:"かけ算",q:"7 × 8 = ?",a:"56",e:"7×8は、7を8回足すこと。7×4=28の2倍で56。"},
-{school:"小学校",grade:"3年",topic:"わり算",q:"36 ÷ 4 = ?",a:"9",e:"4×□=36になる数を考える。4×9=36だから9。"},
-{school:"小学校",grade:"3年",topic:"小数",q:"2.4 + 1.35 = ?",a:"3.75",e:"小数点の位置をそろえて、2.40+1.35=3.75。"},
-{school:"小学校",grade:"4年",topic:"大きな数・計算",q:"125 × 4 = ?",a:"500",e:"125×4=(100×4)+(25×4)=400+100=500。"},
-{school:"小学校",grade:"4年",topic:"角度・図形",q:"三角形の2つの角が50°と60°。残りの角は？",a:"70°",e:"三角形の内角の和は180°。180−50−60=70°。"},
-{school:"小学校",grade:"5年",topic:"分数",q:"1/3 + 1/6 = ?",a:"1/2",e:"分母を6にそろえる。1/3=2/6なので、2/6+1/6=3/6=1/2。"},
-{school:"小学校",grade:"5年",topic:"割合",q:"200円の20%はいくら？",a:"40円",e:"20%=0.2。200×0.2=40円。"},
-{school:"小学校",grade:"5年",topic:"平均",q:"4、6、8の平均は？",a:"6",e:"合計は4+6+8=18。3つの数なので18÷3=6。"},
-{school:"小学校",grade:"6年",topic:"比",q:"2:3の比で、合計が20。小さい方はいくつ？",a:"8",e:"比の合計は2+3=5。20÷5=4。小さい方は4×2=8。"},
-{school:"小学校",grade:"6年",topic:"速さ",q:"時速60kmで2時間進むと何km？",a:"120km",e:"道のり=速さ×時間。60×2=120km。"},
-{school:"小学校",grade:"6年",topic:"分数の計算",q:"3/4 ÷ 1/2 = ?",a:"3/2（1と1/2）",e:"分数のわり算は、わる数を逆数にしてかける。3/4×2/1=6/4=3/2。"},
-{school:"中学校",grade:"1年",topic:"正負の数",q:"−7 + 12 = ?",a:"5",e:"−7から右へ12進むイメージ。答えは5。"},
-{school:"中学校",grade:"1年",topic:"正負の数",q:"(−3) × (−5) = ?",a:"15",e:"負の数どうしのかけ算は正。3×5=15。"},
-{school:"中学校",grade:"1年",topic:"文字式",q:"x=4のとき、3x+2の値は？",a:"14",e:"xに4を代入する。3×4+2=12+2=14。"},
-{school:"中学校",grade:"1年",topic:"一次方程式",q:"3x + 5 = 20 の解は？",a:"x = 5",e:"両辺から5を引いて3x=15。両辺を3で割ってx=5。"},
-{school:"中学校",grade:"1年",topic:"比例",q:"y=3x。x=4のときyは？",a:"12",e:"y=3×4=12。xに4を代入する。"},
-{school:"中学校",grade:"2年",topic:"連立方程式",q:"x+y=7、x−y=1 の解は？",a:"x=4、y=3",e:"2つの式を足すと2x=8。x=4。x+y=7に代入してy=3。"},
-{school:"中学校",grade:"2年",topic:"一次関数",q:"y=2x+3で、x=4のときyは？",a:"11",e:"xに4を代入。y=2×4+3=11。"},
-{school:"中学校",grade:"2年",topic:"図形",q:"底辺6cm、高さ4cmの三角形の面積は？",a:"12cm²",e:"三角形の面積=底辺×高さ÷2。6×4÷2=12cm²。"},
-{school:"中学校",grade:"2年",topic:"確率",q:"サイコロ1個で偶数が出る確率は？",a:"1/2",e:"偶数は2、4、6の3通り。全部で6通り。3/6=1/2。"},
-{school:"中学校",grade:"3年",topic:"展開・因数分解",q:"(x+3)(x+2)を展開すると？",a:"x²+5x+6",e:"x×x=x²、x×2+3×x=5x、3×2=6。"},
-{school:"中学校",grade:"3年",topic:"平方根",q:"√49 = ?",a:"7",e:"7×7=49なので、√49=7。"},
-{school:"中学校",grade:"3年",topic:"二次方程式",q:"x²=25 の解は？",a:"x=±5",e:"5²=25、(−5)²=25。したがってx=5または−5。"},
-{school:"中学校",grade:"3年",topic:"相似",q:"相似比が2:3。小さい図形の辺が8cmなら、大きい辺は？",a:"12cm",e:"8×3/2=12cm。対応する辺の比は相似比と同じ。"},
-{school:"高校",grade:"1年",topic:"数学Ⅰ・二次関数",q:"y=x²−4x+3 の頂点のx座標は？",a:"2",e:"y=(x−2)²−1 と平方完成できる。頂点は(2,−1)。"},
-{school:"高校",grade:"1年",topic:"数学Ⅰ・三角比",q:"直角三角形で、斜辺が10、角θの向かい側が6。sinθは？",a:"3/5（0.6）",e:"sinθ=向かい側/斜辺=6/10=3/5。"},
-{school:"高校",grade:"1年",topic:"数学A・場合の数",q:"異なる5人から2人を選ぶ組合せは何通り？",a:"10通り",e:"5C2=5×4÷(2×1)=10。順番を区別しないので組合せ。"},
-{school:"高校",grade:"1年",topic:"数学A・確率",q:"コインを2回投げ、2回とも表になる確率は？",a:"1/4",e:"表裏の組合せは4通り。そのうち表・表は1通りなので1/4。"},
-{school:"高校",grade:"2年",topic:"数学Ⅱ・微分",q:"f(x)=x² の導関数は？",a:"f'(x)=2x",e:"べき乗の微分：(xⁿ)'=nxⁿ⁻¹。よって(x²)'=2x。"},
-{school:"高校",grade:"2年",topic:"数学Ⅱ・三角関数",q:"sin(30°) の値は？",a:"1/2",e:"30°・60°・90°の直角三角形の辺の比は1:√3:2。sin30°=1/2。"},
-{school:"高校",grade:"2年",topic:"数学B・数列",q:"初項3、公差2の等差数列の第5項は？",a:"11",e:"第n項はaₙ=a₁+(n−1)d。3+(5−1)×2=11。"},
-{school:"高校",grade:"3年",topic:"数学Ⅲ・積分",q:"∫2x dx は？",a:"x² + C",e:"xⁿの不定積分はxⁿ⁺¹/(n+1)+C。2xの積分はx²+C。"},
-{school:"高校",grade:"3年",topic:"数学C・ベクトル",q:"ベクトルa=(2,1)、b=(3,4)の和a+bは？",a:"(5,5)",e:"成分ごとに足す。(2+3, 1+4)=(5,5)。"}
-];
-let currentPool=[],currentIndex=0,currentItem=null;
-const grades={"小学校":["1年","2年","3年","4年","5年","6年"],"中学校":["1年","2年","3年"],"高校":["1年","2年","3年"]};
-function updateGrades(){
- const school=$("school").value;$("grade").innerHTML=grades[school].map(g=>`<option>${g}</option>`).join("");renderTopics();
-}
-function renderTopics(){
- const school=$("school").value,grade=$("grade").value;
- const items=bank.filter(x=>x.school===school&&x.grade===grade);
- const topics=[...new Set(items.map(x=>x.topic))];
- $("topicList").innerHTML=topics.length?topics.map(t=>`<button class="topic" data-topic="${escapeHtml(t)}"><strong>${escapeHtml(t)}</strong><span>${items.filter(x=>x.topic===t).length}問のサンプル</span></button>`).join(""):'<p class="note">この学年の問題は今後追加します。別の学年・単元を選ぶか、問題入力を使ってください。</p>';
- $("topicList").querySelectorAll("button").forEach(b=>b.onclick=()=>startTopic(b.dataset.topic));
- $("topicQuestion").classList.add("hidden");
-}
-function startTopic(topic){
- currentPool=bank.filter(x=>x.school===$("school").value&&x.grade===$("grade").value&&x.topic===topic);
- currentIndex=0;showTopic();
-}
-function showTopic(){
- currentItem=currentPool[currentIndex%currentPool.length];
- $("topicMeta").textContent=currentItem.school+"・"+currentItem.grade+"・"+currentItem.topic+"　｜　"+(currentIndex+1)+"/"+currentPool.length;
- $("topicPrompt").textContent=currentItem.q;$("topicAnswer").textContent=currentItem.a;$("topicExplain").textContent=currentItem.e;
- $("topicQuestion").classList.remove("hidden");
-}
-$("school").onchange=updateGrades;$("grade").onchange=renderTopics;
-$("nextQuestion").onclick=()=>{currentIndex++;showTopic()};
-$("markDone").onclick=()=>{addReview(currentItem.school+" "+currentItem.grade+"："+currentItem.q);recordSolved();$("markDone").textContent="記録しました ✓";setTimeout(()=>$("markDone").textContent="できた・復習に記録",1200)};
-
-/* タブ切替 */
-document.querySelectorAll(".tab").forEach(btn=>btn.onclick=()=>{
- document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b===btn));
- ["solve","photo","topics"].forEach(id=>$(id).classList.toggle("hidden",id!==btn.dataset.tab));
-});
-/* 写真：端末内OCR。TesseractはCDNから取得。画像自体は外部送信しない */
-let photoUrl=null;
-$("photoInput").onchange=e=>{
- const file=e.target.files[0];if(!file)return;
- if(photoUrl)URL.revokeObjectURL(photoUrl);photoUrl=URL.createObjectURL(file);
- $("photoPreview").src=photoUrl;$("photoPreview").classList.remove("hidden");$("ocrBtn").disabled=false;$("ocrStatus").textContent="写真を読み込みました。必要なら文字読み取りを実行してください。";
-};
-$("removePhotoBtn").onclick=()=>{
- if(photoUrl)URL.revokeObjectURL(photoUrl);photoUrl=null;$("photoInput").value="";$("photoPreview").removeAttribute("src");$("photoPreview").classList.add("hidden");$("ocrBtn").disabled=true;$("ocrText").value="";$("photoResult").classList.add("hidden");
-};
-$("ocrBtn").onclick=async()=>{
- if(!photoUrl)return;
- $("ocrBtn").disabled=true;$("ocrStatus").textContent="文字を読み取っています。画像や文字の量によって時間がかかります。";
- try{
-  if(!window.Tesseract){
-   await new Promise((resolve,reject)=>{const s=document.createElement("script");s.src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js";s.onload=resolve;s.onerror=reject;document.head.appendChild(s)});
-  }
-  const result=await Tesseract.recognize(photoUrl,"eng");
-  $("ocrText").value=result.data.text.trim();
-  $("ocrStatus").textContent="読み取り完了。数式の数字・記号は間違う場合があります。必ず写真と照合してください。";
- }catch(e){$("ocrStatus").textContent="読み取りを開始できませんでした。通信環境を確認するか、文字入力を利用してください。"}
- $("ocrBtn").disabled=false;
-};
-$("useOcrBtn").onclick=()=>solveInput($("ocrText").value,$("photoResult"));
-
-$("showReview").onclick=()=>{
- const box=$("reviewList");box.classList.toggle("hidden");
- box.innerHTML=progress.review.length?'<h3 style="font-size:14px">復習する問題</h3>'+progress.review.map((r,i)=>`<div class="question-card">${escapeHtml(r)} <button class="soft" data-remove="${i}" style="float:right">削除</button></div>`).join(""):'<p class="note">復習リストはまだ空です。</p>';
- box.querySelectorAll("[data-remove]").forEach(b=>b.onclick=()=>{progress.review.splice(Number(b.dataset.remove),1);save();$("showReview").click();$("showReview").click()});
-};
-updateGrades();renderStats();
-</script>
-</body>
-</html>
+const G=['小1','小2','小3','小4','小5','小6','中1','中2','中3'];
+const B=[
+[0,'たし算・ひき算','くり上がり・くり下がりに気をつけます。',[['8 + 5 は？','8+5',''],['13 − 6 は？','13-6',''],['27 + 15 は？','27+15','']]],
+[1,'九九・かけ算','九九を声に出して確かめましょう。',[['7 × 8 は？','7×8',''],['6 × 9 は？','6×9',''],['12 ÷ 3 は？','12÷3','']]],
+[2,'大きな数・わり算','わられる数を、わる数で分けます。',[['3200 + 4500 は？','3200+4500',''],['84 ÷ 4 は？','84÷4',''],['125 × 4 は？','125×4','']]],
+[2,'長方形の面積','面積 = たて × よこ',[['たて4cm、よこ7cm の長方形の面積は？','4×7','cm²'],['1辺 6cm の正方形の面積は？','6×6','cm²']]],
+[3,'小数','小数点の位置をそろえて計算します。',[['3.5 × 2 は？','3.5×2',''],['2.4 + 1.8 は？','2.4+1.8',''],['6.3 − 2.9 は？','6.3-2.9','']]],
+[3,'分数のたし引き','分母が同じなら、分子だけ計算します。',[['3/7 + 2/7 は？','3/7+2/7',''],['5/8 − 1/8 は？','5/8-1/8','']]],
+[4,'約分・通分','分母と分子を同じ数でわる（約分）。分母をそろえる（通分）。',[['1/2 + 1/3 は？','1/2+1/3',''],['3/4 − 1/6 は？','3/4-1/6',''],['6/8 を約分すると？','6/8','']]],
+[4,'面積・体積','立体の体積 = たて × よこ × 高さ',[['たて5cm、よこ4cm、高さ3cm の直方体の体積は？','5×4×3','cm³'],['底辺8cm、高さ5cm の平行四辺形の面積は？','8×5','cm²']]],
+[5,'割合','割合 = くらべる量 ÷ もとにする量',[['40人のうち 12人。割合（小数）は？','12/40',''],['800円の 25%（0.25）は？','800×0.25','円']]],
+[5,'速さ・時間・距離','道のり = 速さ × 時間',[['時速60km で 2.5時間進む道のりは？','60×2.5','km'],['150km を 3時間で進む。時速は？','150÷3','km/h']]],
+[5,'分数のかけ算・わり算','わり算は、わる数の逆数をかけます。',[['3/4 × 2/5 は？','3/4×2/5',''],['2/3 ÷ 4/5 は？','2/3÷(4/5)','']]],
+[6,'分数・小数の混合計算','かっこの中から計算します。',[['(1/2 + 1/3) × 6 は？','(1/2+1/3)×6',''],['12 + 8 × 3 は？','12+8×3',''],['(12 + 8) ÷ 4 は？','(12+8)÷4','']]],
+[6,'比例・□を使った式','□を x と書いて、方程式として解きます。',[['□ + 7 = 15 の □ は？','x+7=15',''],['4 × □ = 36 の □ は？','4x=36','']]],
+[6,'円の面積・角度','円の面積 = 半径 × 半径 × 3.14',[['半径5cm の円の面積は？','5×5×3.14','cm²'],['三角形の2つの角が 50° と 60°。残りの角は？','180-50-60','°']]],
+[6,'正負の数','負の数をたすことは、ひくことと同じです。',[['-5 + 12 は？','-5+12',''],['3 − 8 は？','3-8',''],['(-4) × 6 は？','(-4)×6','']]],
+[7,'文字式','同じ文字の項はまとめられます。',[['3x + 2x を整理すると？','3x+2x',''],['2(x + 3) を展開すると？','2(x+3)',''],['3x + 5 − x を整理すると？','3x+5-x','']]],
+[7,'一次方程式','x を左に、数を右に移します。',[['3x + 5 = 20','3x+5=20',''],['2x − 4 = 10','2x-4=10',''],['5x = 35','5x=35',''],['x/3 = 4','x/3=4',''],['2(x + 3) = 14','2(x+3)=14',''],['3x + 2 = 2x + 7','3x+2=2x+7','']]],
+[7,'比例・反比例','y = ax は比例。xy = a は反比例。',[['y = 3x で x = 4 のとき y は？','3×4',''],['xy = 12 で x = 3 のとき y は？','12÷3','']]],
+[7,'図形（おうぎ形・体積）','円柱の体積 = 底面積 × 高さ',[['半径3cm、高さ10cm の円柱の体積（π=3.14）は？','3×3×3.14×10','cm³']]],
+[8,'連立方程式','加減法で、片方の文字を消します。',[['x+y=10、x-y=2','x+y=10、x-y=2',''],['2x+y=7、x-y=2','2x+y=7、x-y=2','']]],
+[8,'不等式','負の数でわるときは不等号が逆向きになります。',[['2x − 3 > 5','2x-3>5',''],['−2x > 6','-2x>6','']]],
+[8,'一次関数','y = ax + b の a が傾き。',[['y = 2x + 1 で x = 3 のとき y は？','2×3+1',''],['傾き2、切片1の直線で x = -2 のとき y は？','2×(-2)+1','']]],
+[8,'式の計算・展開','多項式どうしは、1つずつかけて整理します。',[['(x+2)(x+3) を展開','(x+2)(x+3)',''],['(x+3)² を展開','(x+3)^2','']]],
+[9,'展開・因数分解','かけて定数項、たして x の係数になる2数を探します。',[['x²+5x+6 を因数分解','x^2+5x+6 の因数分解',''],['x²−9 を因数分解','x^2-9 の因数分解','']]],
+[9,'二次方程式','因数分解か解の公式で解きます。',[['x² − 5x + 6 = 0','x^2-5x+6=0',''],['x² − 9 = 0','x^2-9=0',''],['x² + 2x + 1 = 0','x^2+2x+1=0','']]],
+[9,'平方根・三平方の定理','直角三角形の斜辺² = 他の2辺²の和',[['√49 + 3 は？','√49+3',''],['直角をはさむ辺が 3 と 4。斜辺²は？','3^2+4^2','']]],
+[9,'確率・データ','確率 = 起こる場合の数 ÷ すべての場合の数',[['サイコロで偶数が出る確率は？','3/6',''],['5, 8, 6, 9, 7 の平均は？','(5+8+6+9+7)÷5','']]]];
+const L=()=>{try{return JSON.parse(localStorage.getItem('fm1'))||{rev:{},his:[]}}catch(e){return{rev:{},his:[]}}};
+const S=d=>{try{localStorage.setItem('fm1',JSON.stringify(d))}catch(e){}};
+const $=document.getElementById('app'),esc=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+let gr=0,cur=null,msg='';
+function go(v){document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));({home,rev,his,unit,pr}[v]||home)()}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{cur=null;go(b.dataset.v)});
+function home(){$.innerHTML=`<h1>FROST MATH</h1><div class="t">小1〜中3の算数・数学</div><h2>どれから始める？</h2>
+<div class="c lv"><b>文字で入力</b><small>式や問題を打ち込む（例：3x+5=20）</small><input id="in" placeholder="3x+5=20" autocomplete="off" style="margin:8px 0"><button class="b bl" id="go" style="margin:0;justify-content:center">答えを見る</button></div>
+<button class="b gy" id="ph"><span><b>写真で入力（準備中）</b><small>次のバージョンで追加します</small></span></button><div id="pm"></div>
+<h2>学年から選ぶ</h2><div>${G.map((g,i)=>`<button class="chip ${i===gr?'on':''}" data-g="${i}">${g}</button>`).join('')}</div>
+${B.map((u,i)=>u[0]===gr?`<button class="b mt" data-u="${i}"><span>${u[1]}<small>${u[3].length}問</small></span></button>`:'').join('')||'<div class="c">この学年の単元は、これから追加します。</div>'}`;
+$.querySelector('#go').onclick=()=>{const v=$.querySelector('#in').value;if(v.trim())open({q:v,e:v,u:'',t:1})};
+$.querySelector('#in').onkeydown=e=>{if(e.key==='Enter')$.querySelector('#go').click()};
+$.querySelector('#ph').onclick=()=>$.querySelector('#pm').innerHTML='<div class="c">写真の読み取りは、まだ使えません。いまは「文字で入力」か「学年から選ぶ」をお使いください。</div>';
+$.querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>{gr=+b.dataset.g;home()});$.querySelectorAll('[data-u]').forEach(b=>b.onclick=()=>unit(+b.dataset.u))}
+function unit(i){const u=B[i];$.innerHTML=`<button class="bk" id="bk">← もどる</button><h1>${G[u[0]]} ${u[1]}</h1><div class="t">${u[2]}</div><h2>問題</h2>`+u[3].map((p,j)=>`<button class="b bl" data-p="${j}">${esc(p[0])}</button>`).join('');
+$.querySelector('#bk').onclick=home;$.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{const p=u[3][+b.dataset.p];open({q:p[0],e:p[1],u:p[2],h:u[2],ui:i,pj:+b.dataset.p})})}
+function open(p){cur=p;pr()}
+function pr(){const p=cur,r=Solve(p.e),k=p.q+'|'+p.e;if(!r.ok){$.innerHTML=`<button class="bk" id="bk">← もどる</button><div class="c"><div class="q">${esc(p.q)}</div></div><div class="c err"><pre>${esc(r.err)}</pre></div>`;$.querySelector('#bk').onclick=home;return}
+$.innerHTML=`<button class="bk" id="bk">← もどる</button><div class="c"><div class="t">${p.t?'入力した式':G[B[p.ui][0]]+' '+B[p.ui][1]}</div><div class="q">${esc(p.q)}</div></div>
+<div class="c ans"><div class="t" style="color:#2D6B55">答え</div><div class="q">${esc(r.ans)} ${esc(p.u)}</div></div>
+<button class="b bl" id="ex">解説を見る</button><div id="exb" hidden class="c">${r.steps.map(s=>`<p class="st">${esc(s)}</p>`).join('')}</div>
+<button class="b lv" id="hn">ヒントを見る</button><div id="hb" hidden class="c">${esc(p.h||'式を読み取って、計算の順番や移項（左右に移す）の考え方を確認しましょう。')}</div>
+<div class="row"><button class="b mt" id="ok" style="justify-content:center">できた</button><button class="b pk" id="rv" style="justify-content:center">復習する</button></div><div id="mg" class="t">${msg}</div>
+${p.ui!==undefined&&B[p.ui][3][p.pj+1]?'<button class="b gy" id="nx" style="justify-content:center">次の問題へ</button>':''}`;msg='';
+const t=id=>$.querySelector(id);t('#bk').onclick=()=>cur.ui!==undefined?unit(cur.ui):home();
+t('#ex').onclick=()=>t('#exb').hidden=!t('#exb').hidden;t('#hn').onclick=()=>t('#hb').hidden=!t('#hb').hidden;
+t('#ok').onclick=()=>{const d=L();d.his.unshift({k,q:p.q,r:'ok',t:Date.now()});d.his=d.his.slice(0,300);if(d.rev[k])delete d.rev[k];S(d);t('#mg').textContent='記録しました。復習リストからも外しました。'};
+t('#rv').onclick=()=>{const d=L();d.his.unshift({k,q:p.q,r:'rv',t:Date.now()});d.his=d.his.slice(0,300);const o=d.rev[k]||{q:p.q,e:p.e,u:p.u,h:p.h,ui:p.ui,pj:p.pj,t:p.t,miss:0};o.miss++;d.rev[k]=o;S(d);t('#mg').textContent='復習リストに入れました（'+o.miss+'回目）。'};
+if(t('#nx'))t('#nx').onclick=()=>{const u=B[p.ui][3][p.pj+1];open({q:u[0],e:u[1],u:u[2],h:p.h,ui:p.ui,pj:p.pj+1})}}
+function rev(){const d=L(),a=Object.values(d.rev).sort((x,y)=>y.miss-x.miss);$.innerHTML=`<h1>復習リスト</h1><div class="t">まちがえた回数が多い順</div><h2>${a.length}問</h2>`+(a.map((p,i)=>`<button class="b pk" data-r="${i}"><span>${esc(p.q)}<small>${p.miss}回</small></span></button>`).join('')||'<div class="c">まだありません。問題で「復習する」を押すと、ここに入ります。</div>');
+$.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>open(a[+b.dataset.r]))}
+function his(){const d=L(),u={};d.his.forEach(h=>{});$.innerHTML=`<h1>学習履歴</h1><div class="t">新しい順（最大300件）</div><h2>${d.his.length}件</h2>`+(d.his.slice(0,60).map(h=>`<div class="c"><div>${esc(h.q)}</div><div class="t">${new Date(h.t).toLocaleString('ja-JP')} ・ ${h.r==='ok'?'できた':'復習'}</div></div>`).join('')||'<div class="c">まだありません。</div>')}
+window.onerror=()=>{$.innerHTML='<div class="c err">うまく動きませんでした。ホームに戻ってやり直してください。</div>'};
+go('home');
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').then(r=>r.update());let rl=0;navigator.serviceWorker.addEventListener('controllerchange',()=>{if(!rl&&localStorage.getItem('fmsw')){rl=1;location.reload()}localStorage.setItem('fmsw','1')})}
+</script></body></html>
