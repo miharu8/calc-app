@@ -8,6 +8,7 @@ main{max-width:560px;margin:0 auto;padding:16px 16px env(safe-area-inset-bottom)
 small{display:block;font-weight:400;font-size:12px;opacity:.85}.chip{display:inline-block;border:0;padding:8px 14px;border-radius:99px;background:#fff;color:#4B3F8F;margin:0 4px 6px 0;font:inherit;font-size:14px}.chip.on{background:#4B3F8F;color:#fff}
 input,textarea{width:100%;font:inherit;font-size:18px;padding:12px;border:1px solid #D9D3EE;border-radius:12px;background:#fff;color:#2B2F42}.q{font-size:24px;font-weight:500;word-break:break-all}.ans{background:#DDF3EA;color:#2D6B55}pre{white-space:pre-wrap;font:inherit;margin:0}
 .st{margin:0 0 8px}.row{display:grid;grid-template-columns:1fr 1fr;gap:8px}nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #E3DEF3;display:flex;padding-bottom:env(safe-area-inset-bottom)}nav button{flex:1;border:0;background:none;padding:12px 0;font:inherit;font-size:13px;color:#6B6F85}nav .on{color:#4B3F8F;font-weight:600}.err{background:#FBE4EC;color:#8A3A58}.t{font-size:12px;color:#6B6F85}.bk{background:none;border:0;color:#4B3F8F;font:inherit;padding:4px 0}
+.blk{display:inline-flex;align-items:center;justify-content:center;min-width:56px;min-height:56px;padding:0 12px;border-radius:12px;margin:4px;font-weight:500;font-size:18px}.dt{display:inline-block;width:20px;height:20px;border-radius:50%;margin:3px}.pie{display:inline-block;width:84px;height:84px;border-radius:50%;border:2px solid #4B3F8F;margin:6px}.lt{font-size:20px;font-weight:500;line-height:1.7}.pg span{display:inline-block;width:10px;height:10px;border-radius:50%;background:#D9D3EE;margin:0 3px}.pg .on{background:#4B3F8F}.fade{opacity:.35;text-decoration:line-through}
 </style></head><body><main id="app"></main>
 <nav><button data-v="home">ホーム</button><button data-v="rev">復習</button><button data-v="his">履歴</button></nav>
 <script src="engine.js"></script>
@@ -50,7 +51,7 @@ const $=document.getElementById('app'),esc=s=>String(s).replace(/[&<>]/g,c=>({'&
 let gr=0,cur=null,msg='';
 function go(v){document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));({home,rev,his,unit,pr}[v]||home)()}
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{cur=null;go(b.dataset.v)});
-function home(){$.innerHTML=`<h1>FROST MATH</h1><div class="t">小1〜中3の算数・数学 ・ 版 v3</div><h2>どれから始める？</h2>
+function home(){$.innerHTML=`<h1>FROST MATH</h1><div class="t">小1〜中3の算数・数学 ・ 版 v4</div><h2>どれから始める？</h2>
 <div class="c lv"><b>文字で入力</b><small>式や問題を打ち込む（例：3x+5=20）</small><input id="in" placeholder="3x+5=20" autocomplete="off" style="margin:8px 0"><button class="b bl" id="go" style="margin:0;justify-content:center">答えを見る</button></div>
 <button class="b gy" id="ph"><span><b>写真で入力（準備中）</b><small>次のバージョンで追加します</small></span></button><div id="pm"></div>
 <h2>学年から選ぶ</h2><div>${G.map((g,i)=>`<button class="chip ${i===gr?'on':''}" data-g="${i}">${g}</button>`).join('')}</div>
@@ -68,10 +69,11 @@ $.innerHTML=`<button class="bk" id="bk">← もどる</button><div class="c"><di
 <button class="b bl" id="ex">解説を見る</button><div id="exb" hidden class="c">${r.steps.map(s=>`<p class="st">${esc(s)}</p>`).join('')}</div>
 <button class="b lv" id="hn">ヒントを見る</button><div id="hb" hidden class="c">${esc(p.h||'式を読み取って、計算の順番や移項（左右に移す）の考え方を確認しましょう。')}</div>
 <button class="b mt" id="us">どんな時に使う？</button><div id="ub" hidden class="c">${esc(p.ui!==undefined?USE[B[p.ui][1]]:useOf(p.e))}</div>
+<button class="b pk" id="lf">生活で言うと？</button><div id="lb" hidden class="c"></div>
 <div class="row"><button class="b mt" id="ok" style="justify-content:center">できた</button><button class="b pk" id="rv" style="justify-content:center">復習する</button></div><div id="mg" class="t">${msg}</div>
 ${p.ui!==undefined&&B[p.ui][3][p.pj+1]?'<button class="b gy" id="nx" style="justify-content:center">次の問題へ</button>':''}`;msg='';
 const t=id=>$.querySelector(id);t('#bk').onclick=()=>cur.ui!==undefined?unit(cur.ui):home();
-t('#ex').onclick=()=>t('#exb').hidden=!t('#exb').hidden;t('#us').onclick=()=>t('#ub').hidden=!t('#ub').hidden;t('#hn').onclick=()=>t('#hb').hidden=!t('#hb').hidden;
+t('#ex').onclick=()=>t('#exb').hidden=!t('#exb').hidden;t('#lf').onclick=()=>{const b=t('#lb');b.hidden=!b.hidden;if(!b.hidden)showLife(p.e,0)};t('#us').onclick=()=>t('#ub').hidden=!t('#ub').hidden;t('#hn').onclick=()=>t('#hb').hidden=!t('#hb').hidden;
 t('#ok').onclick=()=>{const d=L();d.his.unshift({k,q:p.q,r:'ok',n:NM(p),t:Date.now()});d.his=d.his.slice(0,300);if(d.rev[k])delete d.rev[k];S(d);t('#mg').textContent='記録しました。復習リストからも外しました。'};
 t('#rv').onclick=()=>{const d=L();d.his.unshift({k,q:p.q,r:'rv',n:NM(p),t:Date.now()});d.his=d.his.slice(0,300);const o=d.rev[k]||{q:p.q,e:p.e,u:p.u,h:p.h,ui:p.ui,pj:p.pj,t:p.t,miss:0};o.miss++;d.rev[k]=o;S(d);t('#mg').textContent='復習リストに入れました（'+o.miss+'回目）。'};
 if(t('#nx'))t('#nx').onclick=()=>{const u=B[p.ui][3][p.pj+1];open({q:u[0],e:u[1],u:u[2],h:p.h,ui:p.ui,pj:p.pj+1})}}
@@ -79,6 +81,41 @@ function rev(){const d=L(),a=Object.values(d.rev).sort((x,y)=>y.miss-x.miss);$.i
 $.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>open(a[+b.dataset.r]))}
 function his(){const d=L(),m={};d.his.forEach(x=>{const n=x.n||'その他';m[n]=m[n]||{ok:0,rv:0};m[n][x.r]++});
 $.innerHTML=`<h1>学習履歴</h1><h2>やった単元</h2>`+(Object.keys(m).map(n=>`<div class="c"><div>${esc(n)}</div><div class="t">できた ${m[n].ok}回 ・ 復習 ${m[n].rv}回</div></div>`).join('')||'<div class="c">まだありません。問題で「できた」か「復習する」を押すと、ここに出るよ。</div>')+`<h2>最近のきろく（新しい順）</h2>`+d.his.slice(0,40).map(x=>`<div class="c"><div>${esc(x.q)}</div><div class="t">${new Date(x.t).toLocaleString('ja-JP')} ・ ${x.r==='ok'?'できた':'復習'}</div></div>`).join('')}
+/*LIFE*/
+const CB=['#E9E4F8','#4B3F8F'],CP=['#FBE4EC','#8A3A58'],CM=['#DDF3EA','#2D6B55'],CG=['#ECEAF2','#8B8EA0'];
+const bx=(t,c,f)=>`<span class="blk ${f?'fade':''}" style="background:${c[0]};color:${c[1]}">${t}</span>`;
+const dts=(n,c)=>n>24?bx(n+'個',[c,'#fff']):Array.from({length:n},()=>`<span class="dt" style="background:${c}"></span>`).join('');
+const pie=(n,d)=>`<span class="pie" style="background:conic-gradient(#8E7CE0 0 ${Math.min(100,n/d*100)}%,#fff 0)"></span>`;
+const rep=(n,h)=>n>6?bx('×'+n+' '+h,CB):Array(n).fill(h).map(x=>bx(x,CB)).join('');
+function life(e){
+ const l=Solve.lin&&Solve.lin(e);
+ if(l){const{a,ad,b,c}=l;
+  if(ad>1&&a*ad===1&&b===0&&c>0){const d=ad;return[
+   {t:`x円を ${d}人で同じ金額ずつ分けたら、1人 ${c}円になったよ。ぜんぶで何円？`,v:bx('?円',CB)+' ÷ '+d+'人 = '+bx('1人 '+c+'円',CM)},
+   {t:`${d}人が ${c}円ずつ持っているから、あわせると ${c} × ${d} = ${c*d}円`,v:Array(Math.min(d,6)).fill(bx(c+'円',CM)).join('')},
+   {t:`答え：x = ${c*d}（${c*d}円）`,v:bx(c*d+'円',CM)}]}
+  const v=(c-b)/a;
+  if(ad===1&&a>=1&&Number.isInteger(a)&&c-b>0&&v>0){
+   const s=[{t:`お菓子（1個 ?円）を ${a}個${b>0?'と、ガム'+b+'円を買って、':b<0?'買って、'+(-b)+'円引きのクーポンを使って':'買って'}、ぜんぶで ${c}円。お菓子1個はいくら？`,v:rep(a,'?円')+(b>0?' ＋ '+bx('ガム '+b+'円',CP):b<0?' － '+bx('クーポン '+(-b)+'円',CP):'')+' ＝ '+bx(c+'円',CM)}];
+   if(b!==0)s.push({t:b>0?`まず、ガムの ${b}円 をのぞくよ。${c} − ${b} = ${c-b}円`:`まず、クーポンの ${-b}円 をもとにもどすよ。${c} ＋ ${-b} = ${c-b}円`,v:bx('ガム',CP,1)+' '+bx('お菓子だけで '+(c-b)+'円',CM)});
+   if(a>1)s.push({t:`お菓子 ${a}個で ${c-b}円。1個ぶんは ${c-b} ÷ ${a} = ${v}円`,v:Array(Math.min(a,6)).fill(bx(+v.toFixed(2)+'円',CB)).join('')});
+   s.push({t:`答え：x = ${+v.toFixed(2)}（お菓子は1個 ${+v.toFixed(2)}円）。ためし算：${a} × ${+v.toFixed(2)} ${b<0?'− '+(-b):b>0?'+ '+b:''} = ${c}`,v:bx(+v.toFixed(2)+'円',CM)});return s}}
+ const t=e.replace(/\s/g,''),m=t.match(/^(\d+)([+\-×÷*\/])(\d+)$/);
+ if(m){const a=+m[1],b=+m[3],o=m[2];
+  if(o==='+')return[{t:`${a}個と ${b}個を合わせると、ぜんぶで何個？`,v:dts(a,'#8E7CE0')+' ＋ '+dts(b,'#E58CAE')},{t:`答え：${a} + ${b} = ${a+b}個`,v:dts(a+b,'#4CAF8A')}];
+  if(o==='-')return[{t:`${a}個あって、${b}個食べたよ。のこりは何個？`,v:dts(a,'#8E7CE0')},{t:`答え：${a} − ${b} = ${a-b}個`,v:dts(Math.max(a-b,0),'#4CAF8A')}];
+  if(o==='×'||o==='*')return[{t:`1袋に ${b}個ずつ入ったお菓子が ${a}袋。ぜんぶで何個？`,v:rep(a,b+'個')},{t:`答え：${b} × ${a} = ${a*b}個`,v:dts(a*b,'#4CAF8A')}];
+  if(b>0)return[{t:`${a}個を ${b}人で同じ数ずつ分けるよ。1人何個？`,v:dts(a,'#8E7CE0')+' → '+b+'人'},{t:`答え：${a} ÷ ${b} = ${+(a/b).toFixed(2)}個`,v:bx('1人 '+(+(a/b).toFixed(2))+'個',CM)}]}
+ const f=t.match(/^(\d+)\/(\d+)([+-])(\d+)\/(\d+)$/);
+ if(f){const[a,b,o,c,d]=[+f[1],+f[2],f[3],+f[4],+f[5]],n=o==='+'?a*d+c*b:a*d-c*b,q=b*d;
+  return[{t:o==='+'?`ピザを ${a}/${b} 食べて、あとで ${c}/${d} 食べたよ。あわせてどれだけ？`:`ピザが ${a}/${b} あって、${c}/${d} 食べたよ。のこりは？`,v:pie(a,b)+(o==='+'?' ＋ ':' － ')+pie(c,d)},{t:`答え：${Solve(e).ans.replace(/（約.*）/,'')}（ピザ1枚のうち）`,v:pie(n,q)}]}
+ return null}
+function showLife(e,i){const box=document.getElementById('lb'),s=life(e);
+ if(!s){box.innerHTML='<div class="lt">'+esc(useOf(e))+'</div><div class="t" style="margin-top:8px">この式は、絵つきの説明がまだないよ。</div>';return}
+ box.innerHTML=`<div class="pg">${s.map((_,k)=>`<span class="${k===i?'on':''}"></span>`).join('')}</div><div class="lt" style="margin:10px 0">${esc(s[i].t)}</div><div style="margin:10px 0">${s[i].v}</div><div class="row">${i>0?'<button class="b gy" id="lp" style="justify-content:center">もどる</button>':'<span></span>'}${i<s.length-1?'<button class="b lv" id="ln" style="justify-content:center">次へ</button>':'<span></span>'}</div>`;
+ const a=document.getElementById('lp'),b=document.getElementById('ln');if(a)a.onclick=()=>showLife(e,i-1);if(b)b.onclick=()=>showLife(e,i+1)}
+/*END*/
+
 window.onerror=()=>{$.innerHTML='<div class="c err">うまく動きませんでした。ホームに戻ってやり直してください。</div>'};
 go('home');
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').then(r=>r.update());let rl=0;navigator.serviceWorker.addEventListener('controllerchange',()=>{if(!rl&&localStorage.getItem('fmsw')){rl=1;location.reload()}localStorage.setItem('fmsw','1')})}

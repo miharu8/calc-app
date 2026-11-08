@@ -148,5 +148,6 @@ function solve(raw){try{
    else if(isC(p)){const v=cv(p),fsx=fracSteps(t);r={ans:fs(v)+(v.d>1?'（約 '+dec(v)+'）':''),steps:fsx?['分数の計算は、この順番でやるよ！'].concat(fsx):['計算の順番は ①カッコの中 → ②累乗・かけ算・わり算 → ③たし算・ひき算 だよ！','分数のたし算・ひき算は、先に分母をそろえる（通分）のがコツ。かけ算は分子どうし・分母どうしをかけるだけ！',s+' = '+fs(v)]}}
    else r={ans:show(p),steps:expSteps(t)||['分配法則で、カッコの中身を1個ずつかけてはずして、同じなかまの項をまとめるよ！','まとめたらこうなる：'+show(p)]}}}
  return{ok:true,...r}}catch(e){return{ok:false,err:e.message+'\n\n入力できる例：\n・12+8×3\n・1/2+1/3\n・3x+5=20\n・x^2-5x+6=0\n・x+y=10、x-y=2\n・(x+2)(x+3)\n・x^2+5x+6 の因数分解\n・2x-3>5'}}}
+solve.lin=function(raw){try{const t=tok(String(raw).replace(/²/g,'^2').normalize('NFKC')).join(''),q=t.split('=');if(q.length!==2)return null;const L=P(q[0]),R=P(q[1]);if(!isC(R)||Object.keys(L).some(k=>k!=='1,0'&&k!=='0,0'))return null;const a=L['1,0'],b=cv(L),c=cv(R);if(!a||b.d!==1||c.d!==1)return null;return{a:a.n/a.d,ad:a.d,b:b.n,c:c.n}}catch(x){return null}};
 g.Solve=solve;if(typeof module!=='undefined')module.exports=solve;
 })(typeof window!=='undefined'?window:globalThis);
