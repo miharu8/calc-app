@@ -50,7 +50,7 @@ const $=document.getElementById('app'),esc=s=>String(s).replace(/[&<>]/g,c=>({'&
 let gr=0,cur=null,msg='';
 function go(v){document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));({home,rev,his,unit,pr}[v]||home)()}
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{cur=null;go(b.dataset.v)});
-function home(){$.innerHTML=`<h1>FROST MATH</h1><div class="t">小1〜中3の算数・数学</div><h2>どれから始める？</h2>
+function home(){$.innerHTML=`<h1>FROST MATH</h1><div class="t">小1〜中3の算数・数学 ・ 版 v3</div><h2>どれから始める？</h2>
 <div class="c lv"><b>文字で入力</b><small>式や問題を打ち込む（例：3x+5=20）</small><input id="in" placeholder="3x+5=20" autocomplete="off" style="margin:8px 0"><button class="b bl" id="go" style="margin:0;justify-content:center">答えを見る</button></div>
 <button class="b gy" id="ph"><span><b>写真で入力（準備中）</b><small>次のバージョンで追加します</small></span></button><div id="pm"></div>
 <h2>学年から選ぶ</h2><div>${G.map((g,i)=>`<button class="chip ${i===gr?'on':''}" data-g="${i}">${g}</button>`).join('')}</div>

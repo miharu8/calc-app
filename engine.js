@@ -93,16 +93,16 @@ function factor(p){const a=p['2,0']||F(0),b=p['1,0']||F(0),c=cv(p);
 const lcm=(a,b)=>a/gcd(a,b)*b;
 function simpR(n){let o=1,r=n;for(let i=Math.floor(Math.sqrt(n));i>1;i--)if(n%(i*i)===0){o=i;r=n/(i*i);break}return[o,r]}
 function fracSteps(t){const m=t.match(/^(\d+)\/(\d+)([+*-])(\d+)\/(\d+)$/);if(!m)return null;const[a,b,o,c,d]=[+m[1],+m[2],m[3],+m[4],+m[5]],st=[];
- if(o==='*'){st.push('分数のかけ算は、分子どうし・分母どうしをかけます。',a+'×'+c+' / '+b+'×'+d+' = '+a*c+'/'+b*d,'約分できるときは約分します。 → '+fs(F(a*c,b*d)));return st}
+ if(o==='*'){st.push('分数のかけ算は、分子どうし・分母どうしをかけるだけ！',a+'×'+c+' / '+b+'×'+d+' = '+a*c+'/'+b*d,'約分できるなら約分して、答えは → '+fs(F(a*c,b*d)));return st}
  const L=lcm(b,d),x=a*(L/b),y=c*(L/d),z=o==='+'?x+y:x-y;
- st.push('分母がちがうので通分します（'+b+' と '+d+' の最小公倍数は '+L+'）。',a+'/'+b+' = '+x+'/'+L+'、'+c+'/'+d+' = '+y+'/'+L,'分母がそろったので、分子どうしを計算します。',x+'/'+L+(o==='+'?' + ':' - ')+y+'/'+L+' = '+z+'/'+L,'約分できるときは約分します。 → '+fs(F(z,L)));return st}
+ st.push('分母がちがうから、まず通分するよ！（'+b+' と '+d+' の最小公倍数は '+L+'）。',a+'/'+b+' = '+x+'/'+L+'、'+c+'/'+d+' = '+y+'/'+L,'分母がそろったから、分子どうしを計算！',x+'/'+L+(o==='+'?' + ':' - ')+y+'/'+L+' = '+z+'/'+L,'約分できるなら約分して、答えは → '+fs(F(z,L)));return st}
 function expSteps(t){let f=null,m;
  if(m=t.match(/^\(([^()]+)\)\^2$/))f=['('+m[1]+')','('+m[1]+')'];
  else if(m=t.match(/^(\([^()]+\))(\([^()]+\))$/))f=[m[1],m[2]];
  else if(m=t.match(/^(\d+)(\([^()]+\))$/))f=[m[1],m[2]];
  if(!f)return null;const A=P(f[0]),B=P(f[1]),T=p=>Object.keys(p).map(k=>({[k]:p[k]})),pc=[];
  for(const a of T(A))for(const b of T(B))pc.push('('+show(a)+') × ('+show(b)+') = '+show(pmul(a,b)));
- return['分配法則：前の式の各項を、後ろの式の各項にそれぞれかけます。'].concat(pc,['同じ文字・同じ次数の項（同類項）をまとめます。',show(P(t))])}
+ return['分配法則で、前のカッコの中身を後ろのカッコの中身に1個ずつかけるよ！'].concat(pc,['同じなかま（同類項）をまとめて完成！',show(P(t))])}
 function radical(s){const t=s.replace(/\s+/g,'').normalize('NFKC').replace(/sqrt\(?(\d+)\)?/gi,'√$1').replace(/√\((\d+)\)/g,'√$1').replace(/−/g,'-');
  if(!/^[\d√+-]+$/.test(t)||!/√/.test(t))return null;const ts=t.match(/[+-]?[^+-]+/g);if(!ts||ts.join('')!==t)return null;const co={},st=[];
  for(const x of ts){let m=x.match(/^([+-]?)(\d*)√(\d+)$/),k=x.match(/^([+-]?)(\d+)$/);
@@ -145,7 +145,7 @@ function solve(raw){try{
    r=deg===2?quad(L,R):linear(L,R)}
   else{const p=P(t);
    if(fac)r=factor(p);
-   else if(isC(p)){const v=cv(p);const fsx=fracSteps(t);const fm=t.match(/^(\d+)\/(\d+)([+-])(\d+)\/(\d+)$/),ex=[];if(fm){const A=+fm[2],Bb=+fm[5],l=A*Bb/gcd(A,Bb);ex.push('通分するよ！分母 '+A+' と '+Bb+' の最小公倍数は '+l+'。',fm[1]*l/A+'/'+l+' '+fm[3]+' '+fm[4]*l/Bb+'/'+l+' を計算して、'+(fm[3]==='+'?+fm[1]*l/A+ +fm[4]*l/Bb:fm[1]*l/A-fm[4]*l/Bb)+'/'+l+'（約分できるならして、答えは上のとおり）')}r={ans:fs(v)+(v.d>1?'（約 '+dec(v)+'）':''),steps:['計算の順番は ①カッコの中 → ②累乗・かけ算・わり算 → ③たし算・ひき算 だよ！','分数のたし算・ひき算は、先に分母をそろえる（通分）のがコツ。かけ算は分子どうし・分母どうしをかけるだけ！',s+' = '+fs(v)].concat(fsx?['分数の計算の手順：'].concat(fsx):[])}}
+   else if(isC(p)){const v=cv(p),fsx=fracSteps(t);r={ans:fs(v)+(v.d>1?'（約 '+dec(v)+'）':''),steps:fsx?['分数の計算は、この順番でやるよ！'].concat(fsx):['計算の順番は ①カッコの中 → ②累乗・かけ算・わり算 → ③たし算・ひき算 だよ！','分数のたし算・ひき算は、先に分母をそろえる（通分）のがコツ。かけ算は分子どうし・分母どうしをかけるだけ！',s+' = '+fs(v)]}}
    else r={ans:show(p),steps:expSteps(t)||['分配法則で、カッコの中身を1個ずつかけてはずして、同じなかまの項をまとめるよ！','まとめたらこうなる：'+show(p)]}}}
  return{ok:true,...r}}catch(e){return{ok:false,err:e.message+'\n\n入力できる例：\n・12+8×3\n・1/2+1/3\n・3x+5=20\n・x^2-5x+6=0\n・x+y=10、x-y=2\n・(x+2)(x+3)\n・x^2+5x+6 の因数分解\n・2x-3>5'}}}
 g.Solve=solve;if(typeof module!=='undefined')module.exports=solve;
