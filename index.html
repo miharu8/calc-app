@@ -11,6 +11,9 @@ input,textarea{width:100%;font:inherit;font-size:18px;padding:12px;border:1px so
 .blk{display:inline-flex;align-items:center;justify-content:center;min-width:56px;min-height:56px;padding:0 12px;border-radius:12px;margin:4px;font-weight:500;font-size:18px}.dt{display:inline-block;width:20px;height:20px;border-radius:50%;margin:3px}.pie{display:inline-block;width:84px;height:84px;border-radius:50%;border:2px solid #4B3F8F;margin:6px}.lt{font-size:20px;font-weight:500;line-height:1.7}.pg span{display:inline-block;width:10px;height:10px;border-radius:50%;background:#D9D3EE;margin:0 3px}.pg .on{background:#4B3F8F}.fade{opacity:.35;text-decoration:line-through}
 .kg{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:6px 0}.kp{border:0;border-radius:10px;min-height:46px;font:500 18px inherit;font-family:inherit;background:#fff;color:#2B2F42}.kp.o{background:#E9E4F8;color:#4B3F8F}.kp.s{background:#FBE4EC;color:#8A3A58;font-size:14px}.mv{font-size:20px;font-weight:500;margin:10px 0 2px}.mt2{font-size:14px;color:#6B6F85;margin-bottom:8px}.hp{background:#FBE4EC;color:#8A3A58;padding:0 6px;border-radius:6px}.hb{background:#DCEBFA;color:#2F5A8A;padding:0 6px;border-radius:6px}
 .pkc{background:#FBE4EC;color:#8A3A58}
+.kg{gap:8px}.kp{min-height:60px;font-size:24px;font-weight:600}.kp.kd{background:#fff;color:#2B2F42}.kp.ko{background:#E9E4F8;color:#4B3F8F}.kp.kl{background:#DCEBFA;color:#2F5A8A}.kp.kc{background:#DDF3EA;color:#2D6B55}.kp.kn{background:#ECEAF2;color:#5A5D72}.kp.kx{background:#FBE4EC;color:#8A3A58;font-size:18px}.hl{padding:1px 8px;border-radius:6px;font-weight:500}#in{font-size:24px;padding:14px}small{font-size:14px!important}.t{font-size:14px!important}.chip{font-size:16px!important}
+.kg{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:8px 0}.kp{border:0;border-radius:14px;min-height:54px;font:600 24px inherit;font-family:inherit;box-shadow:0 1px 0 #D9D3EE}.kp.w2{grid-column:span 2;font-size:20px}.kp.n{background:#fff;color:#2B2F42}.kp.o{background:#E9E4F8;color:#4B3F8F;font-size:28px}.kp.c{background:#CFC6F2;color:#35297A}.kp.l{background:#DDF3EA;color:#2D6B55}.kp.b{background:#DCEBFA;color:#2F5A8A}.kp.d{background:#F6C9D8;color:#8A3A58}.lg{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:13px;color:#4B4F66;margin-top:4px}.kd{display:inline-block;width:12px;height:12px;border-radius:4px;margin-right:4px;vertical-align:-1px}.kd.n{background:#fff;border:1px solid #D9D3EE}.kd.o{background:#E9E4F8}.kd.c{background:#CFC6F2}.kd.l{background:#DDF3EA}.kd.b{background:#DCEBFA}.kd.d{background:#F6C9D8}
+#in{font-size:22px}
 </style></head><body><main id="app"></main>
 <nav><button data-v="home">ホーム</button><button data-v="expr">式から</button><button data-v="rev">復習</button><button data-v="his">履歴</button></nav>
 <script src="engine.js"></script>
@@ -158,8 +161,10 @@ function ocrInit(){const f=document.getElementById('pf'),m=document.getElementBy
 
 /*KP*/
 function kpInit(){const k=document.getElementById('kp'),i=document.getElementById('in');if(!k||!i)return;
- const R=[['7','8','9','÷','⌫'],['4','5','6','×','('],['1','2','3','-',')'],['0','.','x','y','+'],['/','x²','=','、','√('],['<','>','≤','≥','クリア']];
- k.className='kg';k.innerHTML=R.flat().map(t=>`<button class="kp ${/[÷×\-+/=<>≤≥]/.test(t)&&t.length===1?'o':(t.length>1||t==='、')&&!/^(x²|√\()$/.test(t)?'s':/[xy]|x²|√\(/.test(t)?'o':''}" data-k="${t}">${t==='-'?'−':t}</button>`).join('');
+ const T=t=>/^[\d.]$/.test(t)?'n':/^[+\-×÷]$/.test(t)?'o':/^(=|<|>|≤|≥)$/.test(t)?'c':/^[xy]$/.test(t)?'l':(t==='⌫'||t==='クリア')?'d':'b';
+ const R=['クリア','⌫','÷','7','8','9','×','4','5','6','-','1','2','3','+','0','.','=','、','x','y','x²','√(','(',')','/','^','<','>','≤','≥'];
+ const lg=[['n','数字'],['o','計算'],['l','文字'],['b','かっこ・とくべつ'],['c','くらべる'],['d','消す']];
+ k.innerHTML='<div class="lg">'+lg.map(a=>`<span><i class="kd ${a[0]}"></i>${a[1]}</span>`).join('')+'</div><div class="kg">'+R.map(t=>`<button class="kp ${T(t)}${t==='クリア'?' w2':''}" data-k="${t}">${t==='-'?'−':t}</button>`).join('')+'</div>';
  k.onmousedown=e=>e.preventDefault();
  k.onclick=e=>{const b=e.target.closest('[data-k]');if(!b)return;let t=b.dataset.k,a=i.selectionStart??i.value.length,z=i.selectionEnd??a;
   if(t==='クリア'){i.value='';return}
@@ -192,7 +197,7 @@ function sit(k){const[ci,tt,fw,why,fl,tp,un]=SC[k];
  $.querySelector('#sx').onclick=()=>{if(!cu)return;const b=$.querySelector('#sxb');b.innerHTML=cu.r.steps.map(x=>`<p class="st">${esc(x)}</p>`).join('');b.hidden=!b.hidden};
  $.querySelector('#sg').onclick=()=>{if(cu)open({q:cu.ex,e:cu.ex,u:'',t:1,s:k})}}
 const dA=a=>{const m=a.match(/^(.*?)（約 (.*?)）$/);if(!m||m[1].includes('x'))return a;let d=+(m[1].split('/')[1]||1);while(d%2===0)d/=2;while(d%5===0)d/=5;return(d===1?'':'約 ')+(+(+m[2]).toFixed(2))};
-const ft=()=>{if(!$.querySelector('#ft'))$.insertAdjacentHTML('beforeend','<div id="ft" class="t" style="text-align:center;margin:28px 0 8px">Presented by 株式会社SAKURA WORKS<br>版 v12</div>')};new MutationObserver(ft).observe($,{childList:true});
+const ft=()=>{if(!$.querySelector('#ft'))$.insertAdjacentHTML('beforeend','<div id="ft" class="t" style="text-align:center;margin:28px 0 8px">Presented by 株式会社SAKURA WORKS<br>版 v13</div>')};new MutationObserver(ft).observe($,{childList:true});
 /*SITEND*/
 
 window.onerror=()=>{$.innerHTML='<div class="c err">うまく動きませんでした。ホームに戻ってやり直してください。</div>'};
