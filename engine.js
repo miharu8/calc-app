@@ -13,19 +13,19 @@ const isC=p=>Object.keys(p).every(k=>k==='0,0');
 const cv=p=>p['0,0']||F(0);
 const isq=n=>{const r=Math.round(Math.sqrt(n));return r*r===n?r:null};
 function tok(s){
- s=s.replace(/²/g,'^2').replace(/³/g,'^3').normalize('NFKC').replace(/[×·]/g,'*').replace(/÷/g,'/').replace(/[−ー‐]/g,'-').replace(/\s+/g,'').replace(/<=|≦/g,'≤').replace(/>=|≧/g,'≥').replace(/sqrt/gi,'√');
- const t=s.match(/\d+\.?\d*|\.\d+|[xy]|[-+*\/^()=<>≤≥√]/g)||[];
+ s=s.replace(/²/g,'^2').replace(/³/g,'^3').normalize('NFKC').replace(/[×·]/g,'*').replace(/[−ー‐]/g,'-').replace(/\s+/g,'').replace(/<=|≦/g,'≤').replace(/>=|≧/g,'≥').replace(/sqrt/gi,'√');
+ const t=s.match(/\d+\.?\d*|\.\d+|[xy]|[-+*\/÷^()=<>≤≥√]/g)||[];
  if(t.join('').length!==s.length)bad('使えない文字が入っています。数字、x、y、+ - × ÷ ( ) ^ √ = が使えます。');
  return t}
 function parse(t){let i=0;const pk=()=>t[i],nx=()=>t[i++];
  function expr(){let r=term();while(pk()==='+'||pk()==='-'){const o=nx(),q=term();r=padd(r,o==='+'?q:pneg(q))}return r}
  function term(){let r=un();for(;;){const c=pk();
-  if(c==='*'||c==='/'){nx();const q=un();if(c==='*')r=pmul(r,q);else{if(!isC(q)||isz(cv(q)))bad('わり算は「0以外の数でわる」形だけ対応しています。');r=pmul(r,cst(inv(cv(q))))}}
+  if(c==='*'||c==='/'||c==='÷'){nx();const q=un();if(c==='*')r=pmul(r,q);else{if(!isC(q)||isz(cv(q)))bad('わり算は「0以外の数でわる」形だけ対応しています。');r=pmul(r,cst(inv(cv(q))))}}
   else if(c&&/^[xy(√\d.]/.test(c))r=pmul(r,pw());else return r}}
  function un(){if(pk()==='-'){nx();return pneg(un())}if(pk()==='+'){nx();return un()}return pw()}
  function pw(){const b=atom();if(pk()!=='^')return b;nx();const e=un();if(!isC(e)||cv(e).d!==1||cv(e).n<0||cv(e).n>6)bad('累乗の指数は0〜6の整数だけ対応しています。');let r=cst(F(1));for(let k=0;k<cv(e).n;k++)r=pmul(r,b);return r}
  function atom(){const c=nx();if(c===undefined)bad('式が途中で終わっています。');
-  if(/^[\d.]/.test(c)){const[a,b='']=c.split('.');return cst(F(+(a+b||0),Math.pow(10,b.length)))}
+  if(/^[\d.]/.test(c)){const[a,b='']=c.split('.');let v=F(+(a+b||0),Math.pow(10,b.length));if(pk()==='/'&&/^[\d.]/.test(t[i+1]||'')&&t[i+2]!=='^'){nx();const d=nx(),[a2,b2='']=d.split('.'),w=F(+(a2+b2||0),Math.pow(10,b2.length));if(isz(w))bad('0でわることはできません。');v=mul(v,inv(w))}return cst(v)}
   if(c==='x')return{'1,0':F(1)};if(c==='y')return{'0,1':F(1)};
   if(c==='('){const r=expr();if(nx()!==')')bad('かっこが閉じていません。');return r}
   if(c==='√'){const a=atom();if(!isC(a))bad('√の中は数だけ対応しています。');const f=cv(a),n=isq(f.n),d=isq(f.d);if(n===null||d===null)bad('√の中が平方数でない場合は、この版では未対応です（例：√9、√(1/4)は対応）。');return cst(F(n,d))}
@@ -92,8 +92,9 @@ function factor(p){const a=p['2,0']||F(0),b=p['1,0']||F(0),c=cv(p);
 
 const lcm=(a,b)=>a/gcd(a,b)*b;
 function simpR(n){let o=1,r=n;for(let i=Math.floor(Math.sqrt(n));i>1;i--)if(n%(i*i)===0){o=i;r=n/(i*i);break}return[o,r]}
-function fracSteps(t){const m=t.match(/^(\d+)\/(\d+)([+*-])(\d+)\/(\d+)$/);if(!m)return null;const[a,b,o,c,d]=[+m[1],+m[2],m[3],+m[4],+m[5]],st=[];
+function fracSteps(t){const m=t.match(/^(\d+)\/(\d+)([+*÷-])(\d+)\/(\d+)$/);if(!m)return null;const[a,b,o,c,d]=[+m[1],+m[2],m[3],+m[4],+m[5]],st=[];
  if(o==='*'){st.push('分数のかけ算は、分子どうし・分母どうしをかけるだけ！',a+'×'+c+' / '+b+'×'+d+' = '+a*c+'/'+b*d,'約分できるなら約分して、答えは → '+fs(F(a*c,b*d)));return st}
+ if(o==='÷'){if(c===0)return null;const x=a*d,y=b*c;st.push('分数のわり算は、わる数をさかさま（'+c+'/'+d+' → '+d+'/'+c+'）にして、かけ算にするよ！',a+'/'+b+' × '+d+'/'+c+' = '+x+'/'+y,'約分できるなら約分して、答えは → '+fs(F(x,y)));return st}
  const L=lcm(b,d),x=a*(L/b),y=c*(L/d),z=o==='+'?x+y:x-y;
  st.push('分母がちがうから、まず通分するよ！（'+b+' と '+d+' の最小公倍数は '+L+'）。',a+'/'+b+' = '+x+'/'+L+'、'+c+'/'+d+' = '+y+'/'+L,'分母がそろったから、分子どうしを計算！',x+'/'+L+(o==='+'?' + ':' - ')+y+'/'+L+' = '+z+'/'+L,'約分できるなら約分して、答えは → '+fs(F(z,L)));return st}
 function expSteps(t){let f=null,m;
@@ -149,5 +150,14 @@ function solve(raw){try{
    else r={ans:show(p),steps:expSteps(t)||['分配法則で、カッコの中身を1個ずつかけてはずして、同じなかまの項をまとめるよ！','まとめたらこうなる：'+show(p)]}}}
  return{ok:true,...r}}catch(e){return{ok:false,err:e.message+'\n\n入力できる例：\n・12+8×3\n・1/2+1/3\n・3x+5=20\n・x^2-5x+6=0\n・x+y=10、x-y=2\n・(x+2)(x+3)\n・x^2+5x+6 の因数分解\n・2x-3>5'}}}
 solve.lin=function(raw){try{const t=tok(String(raw).replace(/²/g,'^2').normalize('NFKC')).join(''),q=t.split('=');if(q.length!==2)return null;const L=P(q[0]),R=P(q[1]);if(!isC(R)||Object.keys(L).some(k=>k!=='1,0'&&k!=='0,0'))return null;const a=L['1,0'],b=cv(L),c=cv(R);if(!a||b.d!==1||c.d!==1)return null;return{a:a.n/a.d,ad:a.d,b:b.n,c:c.n}}catch(x){return null}};
+solve.q=function(raw){try{const s=String(raw).replace(/²/g,'^2').normalize('NFKC'),ps=s.split(/[、,;；\n]|かつ/).filter(z=>z.trim()),g=(p,k)=>p[k]||F(0),I=a=>a.every(f=>f.d===1);
+if(ps.length===2){const q=ps.map(z=>{const e=tok(z).join('').split('=');if(e.length!==2)throw 0;const D=padd(P(e[0]),pneg(P(e[1])));if(Object.keys(D).some(k=>!['1,0','0,1','0,0'].includes(k)))throw 0;const f=[g(D,'1,0'),g(D,'0,1'),neg(g(D,'0,0'))];if(!I(f))throw 0;return f.map(x=>x.n)});return{k:'sys',q}}
+const t=tok(s).join(''),m=t.match(/≤|≥|<|>/);
+if(m){const[l,r]=t.split(m[0]),L=P(l),R=P(r);if(!isC(R)||Object.keys(L).some(k=>k!=='1,0'&&k!=='0,0'))return null;const a=g(L,'1,0'),b=g(L,'0,0'),c=g(R,'0,0');if(!I([a,b,c])||a.n<1)return null;return{k:'ineq',op:m[0],a:a.n,b:b.n,c:c.n}}
+const q=t.split('=');if(q.length!==2)return null;const L=P(q[0]),R=P(q[1]);if(Object.keys(L).concat(Object.keys(R)).some(k=>k!=='1,0'&&k!=='0,0'))return null;
+const v=[g(L,'1,0'),g(L,'0,0'),g(R,'1,0'),g(R,'0,0')];if(!I(v))return null;let[a,b,c,d]=v.map(x=>x.n);if(c>a){[a,c]=[c,a];[b,d]=[d,b]}
+if(c<1||a<=c||d-b<=0)return null;return{k:'lin2',a,b,c,d}}catch(x){return null}};
+solve.qd=function(raw){try{let s=String(raw).replace(/²/g,'^2').normalize('NFKC');const fac=/因数分解|factor/i.test(s);s=s.replace(/因数分解|を|の|して|せよ|解け|解く|求めよ/g,'').replace(/[、,;；。:：\s]+$/,'');const t=tok(s).join('');let D;if(t.includes('=')){const q=t.split('=');if(q.length!==2)return null;D=padd(P(q[0]),pneg(P(q[1])))}else{if(!fac)return null;D=P(t)}
+if(Object.keys(D).some(z=>!['2,0','1,0','0,0'].includes(z)))return null;const a=D['2,0']||F(0),b=D['1,0']||F(0),c=D['0,0']||F(0);if(a.n!==1||a.d!==1||b.d!==1||c.d!==1||c.n===0)return null;return{b:b.n,c:c.n,eq:t.includes('=')}}catch(x){return null}};
 g.Solve=solve;if(typeof module!=='undefined')module.exports=solve;
 })(typeof window!=='undefined'?window:globalThis);

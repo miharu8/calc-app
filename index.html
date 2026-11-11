@@ -58,7 +58,7 @@ const $=document.getElementById('app'),esc=s=>String(s).replace(/[&<>]/g,c=>({'&
 let gr=0,cur=null,msg='';
 function go(v){document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));({home,rev,his,unit,pr}[v]||home)()}
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{cur=null;go(b.dataset.v)});
-function home(){$.innerHTML=`<h1>FROST MATH</h1><div class="t">小1〜中3の算数・数学 ・ 版 v7</div><h2>どれから始める？</h2>
+function home(){$.innerHTML=`<h1>FROST MATH</h1><div class="t">小1〜中3の算数・数学 ・ 版 v9</div><h2>どれから始める？</h2>
 <div class="c lv"><b>文字で入力</b><small>式や問題を打ち込む（例：3x+5=20）</small><input id="in" placeholder="3x+5=20" autocomplete="off" style="margin:8px 0"><button class="b bl" id="go" style="margin:0;justify-content:center">答えを見る</button></div>
 <button class="b pk" id="ph"><span><b>写真で入力</b><small>撮影して読み取り、直してから解く（最初の1回はネットが必要）</small></span></button><input type="file" id="pf" accept="image/*" hidden><div id="pm"></div>
 <h2>学年から選ぶ</h2><div>${G.map((g,i)=>`<button class="chip ${i===gr?'on':''}" data-g="${i}">${g}</button>`).join('')}</div>
@@ -119,12 +119,21 @@ function life(e){
 
  const Q=Solve.q&&Solve.q(e);
  if(Q){const A=Solve(e).ans;
-  if(Q.k==='ineq'){const{op,a,b,c}=Q,w={'<':'より安い','≤':'以下','>':'より高い','≥':'以上'}[op],o=op==='<'||op==='≤'?'以下・未満':'以上・超';
-   return[{t:`お菓子（1個 x円）を ${a}個と、ガム${b}円を買うよ。ぜんぶで ${c}円${w}にしたい。お菓子1個は、いくらならOK？`,v:rep(a,'x円')+' ＋ '+bx('ガム '+b+'円',CP)+' '+bx(op+' '+c+'円',CM)},{t:`ガムの ${b}円 をのぞくと、お菓子だけで ${c} − ${b} = ${c-b}円。これと くらべて「${op}」になればOK。`,v:bx('お菓子だけ '+op+' '+(c-b)+'円',CM)},{t:`答え：${A}`,v:bx(A,CM)}]}
+  if(Q.k==='ineq'){const{op,a,b,c}=Q,w={'<':'より安い','≤':'以下','>':'より高い','≥':'以上'}[op],cp=b<0,B2=Math.abs(b);
+   return[{t:`お菓子（1個 x円）を ${a}個${cp?'買って、'+B2+'円引きのクーポンを使うよ':'と、ガム'+B2+'円を買うよ'}。ぜんぶで ${c}円${w}にしたい。お菓子1個は、いくらならOK？`,v:rep(a,'x円')+(cp?' － '+bx('クーポン '+B2+'円',CP):b>0?' ＋ '+bx('ガム '+b+'円',CP):'')+' '+bx(op+' '+c+'円',CM)}].concat(b!==0?[{t:cp?`クーポンの ${B2}円 をもとにもどすと、${c} ＋ ${B2} = ${c-b}円。`:`ガムの ${b}円 をのぞくと、${c} − ${b} = ${c-b}円。`,v:bx('お菓子だけの代金 '+op+' '+(c-b)+'円',CM)}]:[],[{t:`答え：${A}`,v:bx(A,CM)}])}
   if(Q.k==='lin2'){const{a,b,c,d}=Q;return[{t:`ケーキ（1個 x円）。Aさんは ${a}個と ${b}円のクッキー、Bさんは ${c}個と ${d}円のクッキー。ふたりの合計は同じだったよ。`,v:'A '+rep(a,'x円')+bx('クッキー '+b+'円',CP)+'<br>B '+rep(c,'x円')+bx('クッキー '+d+'円',CP)},{t:`ふたりに共通のケーキ ${c}個ぶんを、両方からとるよ！`,v:'A '+rep(a-c,'x円')+bx('クッキー '+b+'円',CP)+'<br>B '+bx('クッキー '+d+'円',CP)},{t:`のこったケーキ ${a-c}個ぶん = ${d} − ${b} = ${d-b}円。1個ぶんは ${d-b} ÷ ${a-c}。`,v:bx((d-b)+'円 ÷ '+(a-c)+'個',CM)},{t:`答え：${A}`,v:bx(A,CM)}]}
   if(Q.k==='sys'){let[p,r]=Q.q;const sp=Q.q.find(z=>z[0]===1&&z[1]===1),df=Q.q.find(z=>z[0]===1&&z[1]===-1);
    if(sp&&df){const S=sp[2],D=df[2];return[{t:`りんご(x円)とみかん(y円)。合わせて ${S}円。りんごはみかんより ${D}円 高いよ。`,v:bx('りんご ＋ みかん ＝ '+S+'円',CB)+'<br>'+bx('りんご － みかん ＝ '+D+'円',CP)},{t:`りんごが ${D}円ぶん高いのを、いったん引くと、みかん2つぶんで ${S} − ${D} = ${S-D}円。`,v:bx('みかん ×2 ＝ '+(S-D)+'円',CM)},{t:`みかん1個は ${S-D} ÷ 2 = ${(S-D)/2}円。りんごは ${(S-D)/2} + ${D} = ${(S-D)/2+D}円。`,v:bx('みかん '+(S-D)/2+'円',CM)+bx('りんご '+((S-D)/2+D)+'円',CP)},{t:`答え：${A}`,v:bx(A,CM)}]}
    if(Q.q.every(z=>z[0]>0&&z[1]>0&&z[2]>0))return[{t:`りんご(x円)とみかん(y円)。Aさんは りんご${p[0]}個とみかん${p[1]}個で ${p[2]}円。Bさんは りんご${r[0]}個とみかん${r[1]}個で ${r[2]}円。`,v:'A '+rep(p[0],'りんご')+rep(p[1],'みかん')+bx(p[2]+'円',CM)+'<br>B '+rep(r[0],'りんご')+rep(r[1],'みかん')+bx(r[2]+'円',CM)},{t:'ふたりの買い物を引き算して、どちらか片方の数を消すと、1つの文字だけになるよ。',v:bx('1種類だけにする',CB)},{t:`答え：${A}`,v:bx(A,CM)}]}}
+ const QD=Solve.qd&&Solve.qd(e);
+ if(QD){const{b,c,eq}=QD,A=Solve(e).ans,cand=[],ab=Math.abs(c);for(let d=1;d*d<=ab;d++)if(ab%d===0){const f=ab/d;(c>0?(b>=0?[[d,f]]:[[-d,-f]]):[[d,-f],[-d,f]]).forEach(p=>cand.push(p))}
+  const hit=cand.find(p=>p[0]+p[1]===b);
+  if(hit){const[m,n]=hit,sg=v=>v>=0?'＋'+v:'－'+(-v),P2=`(x${sg(m)})(x${sg(n)})`;
+   const s=[{t:`x²${b===0?'':(b>0?' ＋ ':' － ')+(Math.abs(b)===1?'':Math.abs(b))+'x'} ${c>=0?'＋':'－'} ${Math.abs(c)} を、(x＋□)(x＋△) の形に分けたいよ。`,v:bx('(x＋□)(x＋△)',CB)},
+    {t:`□×△ = ${c}、□＋△ = ${b} になる2つの数を探そう！`,v:cand.map(p=>bx(p[0]+'×'+p[1]+' = '+c+'（たすと '+(p[0]+p[1])+'）',p===hit?CM:CG)).join('<br>')},
+    {t:`見つかった！ ${m} と ${n}。だから ${P2}`,v:bx(P2,CM)}];
+   if(eq)s.push({t:`${P2} = 0 は、どちらかのカッコが 0 になれば成り立つよ。`,v:bx('x ＝ '+(-m)+'、x ＝ '+(-n),CM)});
+   s.push({t:`答え：${A}`,v:bx(A,CM)});return s}}
  return null}
 function showLife(e,i){const box=document.getElementById('lb'),s=life(e);
  if(!s){box.innerHTML='<div class="lt">'+esc(useOf(e))+'</div><div class="t" style="margin-top:8px">この式は、絵つきの説明がまだないよ。</div>';return}
